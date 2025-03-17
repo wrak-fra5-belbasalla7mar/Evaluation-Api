@@ -1,12 +1,12 @@
 package com.spring.evalapi.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "kpis")
 public class KPI {
 
     @Id
@@ -16,6 +16,7 @@ public class KPI {
 
     @ManyToOne
     @JoinColumn(name = "cycle_id")
+    @JsonBackReference
     private Cycle cycle;
 
 //    @ManyToOne
@@ -40,15 +41,6 @@ public class KPI {
     public void setCycle(Cycle cycle) {
         this.cycle = cycle;
     }
-
-//    public Profile getProfile() {
-//        return profile;
-//    }
-//
-//    public void setProfile(Profile profile) {
-//        this.profile = profile;
-//    }
-
     public Long getId() {
         return id;
     }
@@ -72,4 +64,14 @@ public class KPI {
     public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
     }
+
+
+
+//    public Profile getProfile() {
+//        return profile;
+//    }
+//
+//    public void setProfile(Profile profile) {
+//        this.profile = profile;
+//    }
 }

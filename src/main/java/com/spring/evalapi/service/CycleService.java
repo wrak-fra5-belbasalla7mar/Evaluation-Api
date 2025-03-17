@@ -1,12 +1,20 @@
 package com.spring.evalapi.service;
 
+import com.spring.evalapi.entity.Objectives;
+import com.spring.evalapi.utils.CycleState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.spring.evalapi.dto.NewCycleDto;
 import com.spring.evalapi.entity.Cycle;
+import com.spring.evalapi.entity.KPI;
 import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KPIRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,44 +22,53 @@ public class CycleService {
 
 
     private final CycleRepository cycleRepository;
-    private final KPIRepository kpiRepository;
-
-    public CycleService(CycleRepository cycleRepository, KPIRepository kpiRepository) {
+    public CycleService(CycleRepository cycleRepository) {
         this.cycleRepository = cycleRepository;
-        this.kpiRepository = kpiRepository;
     }
-
 
     @Transactional
-    public Cycle addCycle(Cycle cycle) {
+    public Cycle addCycle(NewCycleDto cycleDto) {
         Cycle newCycle = new Cycle();
-        newCycle.setName(cycle.getName());
-        newCycle.setEndDate(cycle.getEndDate());
-        newCycle.setStartDate(cycle.getStartDate());
-        newCycle.setCycleState(cycle.getCycleState());
-        newCycle.setKpis(cycle.getKpis());
-        return cycleRepository.save(newCycle);
-
+            newCycle.setName(cycleDto.getName());
+            newCycle.setEndDate(cycleDto.getEndDate());
+            newCycle.setStartDate(cycleDto.getStartDate());
+            newCycle.setState(CycleState.CREATED);
+            for (KPI kpi : cycleDto.getKpis()) {
+                    newCycle.addKPI(kpi);
+            }
+            return cycleRepository.save(newCycle);
     }
 
-    public Cycle viewCycle() {
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(now);
-        return cycleRepository.findFirstCycleClosestToNow(now);
+    public Cycle ViewTheLatestCycle(){
+        return cycleRepository.findLatestCycle();
     }
 
-    public void deleteCycle(long id) {
-
-        cycleRepository.deleteById(id);
+    @Transactional
+    public Cycle openCycle() {
+        Cycle cycle = cycleRepository.findLatestCycle();
+        cycle.setState(CycleState.OPEN);
+        return cycleRepository.save(cycle);
     }
 
-    public Cycle updateCycle(Cycle cycle) {
-        Optional<Cycle> optionalCycle = cycleRepository.findById(cycle.getId());
-
-        if (optionalCycle.isPresent()) {
-            Cycle updatedcycle = optionalCycle.get();
-            return cycleRepository.save(updatedcycle);
-        }
-        return cycle;
+    public  Cycle passCycle(){
+        Cycle cycle = cycleRepository.findLatestCycle();
+        cycle.setState(CycleState.PASSED);
+        return cycleRepository.save(cycle);
     }
+
+    @Transactional
+    public Cycle closeCycle() {
+
+        Cycle cycle = cycleRepository.findLatestCycle();
+        cycle.setState(CycleState.CLOSED);
+        return cycleRepository.save(cycle);
+    }
+
+    public Cycle putObjectives(List<Objectives> objectives){
+        Cycle cycle =cycleRepository.findLatestCycle();
+        cycle.setObjectives(objectives);
+        return cycleRepository.save(cycle);
+    }
+
+
 }

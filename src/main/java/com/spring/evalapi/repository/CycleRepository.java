@@ -7,11 +7,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 
 public interface CycleRepository extends JpaRepository<Cycle,Long> {
 
-    @Query("SELECT c FROM Cycle c ORDER BY ABS(FUNCTION('DATEDIFF', c.startDate, :now)) ASC")
-    Cycle findFirstCycleClosestToNow(@Param("now") LocalDateTime now);
+    @Query("SELECT c FROM Cycle c ORDER BY c.startDate DESC LIMIT 1")
+    Cycle findLatestCycle();
 
 }

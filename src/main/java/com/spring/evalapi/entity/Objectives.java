@@ -2,6 +2,8 @@ package com.spring.evalapi.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Objectives {
@@ -10,8 +12,13 @@ public class Objectives {
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
     private long id;
 
+    @NotNull(message = "provide a user id")
     private long assignedUserId;
+
+    @NotBlank(message = "objective name is required")
     private String title;
+
+    @NotBlank(message = "description name is required")
     private String description;
 
     @ManyToOne

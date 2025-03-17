@@ -1,28 +1,48 @@
 package com.spring.evalapi.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.evalapi.utils.CycleState;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "cycles")
 public class Cycle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
+
+    @NotBlank(message = "Cycle name is required")
     private  String name;
+
+    @NotNull(message = "Start date is required")
+    @FutureOrPresent(message = "Start date must be in the present or future")
     private LocalDate startDate;
+
+    @NotNull(message = "End date is required")
+    @Future(message = "End date must be in the future")
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
-    private CycleState state=CycleState.CLOSED;
+    private CycleState state ;
+
+    public void addKPI(KPI kpi) {
+        kpis.add(kpi);
+        kpi.setCycle(this);
+    }
+
 
     @OneToMany(mappedBy = "cycle", orphanRemoval = true ,cascade = CascadeType.ALL)
-    private List<KPI> kpis;
+    @JsonManagedReference
+    private List<KPI> kpis = new ArrayList<>();
 
     @OneToMany(mappedBy = "cycle",  orphanRemoval = true ,cascade = CascadeType.ALL)
     private List<Objectives> objectives;
@@ -33,16 +53,12 @@ public class Cycle {
 
     public Cycle() {
     }
-
-
-    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<KPI> kpis, List<Objectives> objectives) {
+    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<KPI> kpis) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.state = state;
-        this.kpis = kpis;
-        this.objectives = objectives;
-
+        this.kpis = kpis != null ? kpis : new ArrayList<>();
     }
 
     public CycleState getState() {
@@ -53,13 +69,7 @@ public class Cycle {
         this.state = state;
     }
 
-//    public List<Profile> getKpiProfiles() {
-//        return profiles;
-//    }
-//
-//    public void setKpiProfiles(List<Profile> profiles) {
-//        this.profiles = profiles;
-//    }
+
 
     public Long getId() {
         return id;
