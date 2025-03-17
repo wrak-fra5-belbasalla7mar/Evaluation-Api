@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
-@Repository
+
 public interface CycleRepository extends JpaRepository<Cycle,Long> {
 
     @Query("SELECT c FROM Cycle c ORDER BY ABS(FUNCTION('DATEDIFF', c.startDate, :now)) ASC")

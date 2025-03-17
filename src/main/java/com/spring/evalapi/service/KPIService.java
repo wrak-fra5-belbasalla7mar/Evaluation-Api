@@ -54,11 +54,12 @@ public class KPIService {
         }
         return kpiRepository.save(kpi);
     }
-    public void deleteKPI(long id) {
+    public String deleteKPI(long id) {
         if (!kpiRepository.existsById(id)){
             throw new IllegalArgumentException("KPI is Already not Found");
         }
         kpiRepository.deleteById(id);
+        return "KPI was Deleted Successfully!";
     }
 
 }

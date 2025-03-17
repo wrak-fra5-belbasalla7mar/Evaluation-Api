@@ -40,8 +40,9 @@ public class KPIController {
         return ResponseEntity.ok(kpiService.updateKPI(kpi));
     }
     @DeleteMapping("/{id}")
-    public void deleteKPI(@PathVariable Long id){
-        kpiService.deleteKPI(id);
+    public ResponseEntity<String> deleteKPI(@PathVariable Long id){
+
+        return ResponseEntity.ok(kpiService.deleteKPI(id));
     }
 
 }
