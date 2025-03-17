@@ -6,38 +6,31 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "kpis")
 public class KPI {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
 
     @ManyToOne
     @JoinColumn(name = "cycle_id")
     private Cycle cycle;
 
+//    @ManyToOne
+//    @JoinColumn(name = "profile_id")
+//    private Profile profile;
+
     @OneToMany(mappedBy = "kpi" ,cascade = CascadeType.ALL )
     private List<Rating> ratings;
-
-    @ManyToOne
-    @JoinColumn(name = "kpi_profile_id")
-    private KPIProfile kpiProfile;
 
     public KPI() {
     }
 
-    public KPI(String name, Cycle cycle, KPIProfile kpiProfile) {
+    public KPI(String name, Cycle cycle) {
         this.name = name;
         this.cycle = cycle;
-        this.kpiProfile = kpiProfile;
-    }
-
-    public KPI(String name, Cycle cycle, List<Rating> ratings, KPIProfile kpiProfile) {
-        this.name = name;
-        this.cycle = cycle;
-        this.ratings = ratings;
-        this.kpiProfile = kpiProfile;
     }
 
     public Cycle getCycle() {
@@ -48,19 +41,19 @@ public class KPI {
         this.cycle = cycle;
     }
 
-    public KPIProfile getKpiProfile() {
-        return kpiProfile;
-    }
+//    public Profile getProfile() {
+//        return profile;
+//    }
+//
+//    public void setProfile(Profile profile) {
+//        this.profile = profile;
+//    }
 
-    public void setKpiProfile(KPIProfile kpiProfile) {
-        this.kpiProfile = kpiProfile;
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -70,14 +63,6 @@ public class KPI {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Cycle getCycleId() {
-        return cycle;
-    }
-
-    public void setCycleId(Cycle cycleId) {
-        this.cycle = cycleId;
     }
 
     public List<Rating> getRatings() {

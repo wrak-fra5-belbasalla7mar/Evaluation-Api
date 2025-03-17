@@ -2,7 +2,7 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.repository.CycleRepository;
-import com.spring.evalapi.repository.KpiRepository;
+import com.spring.evalapi.repository.KPIRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +14,9 @@ public class CycleService {
 
 
     private final CycleRepository cycleRepository;
-    private final KpiRepository kpiRepository;
+    private final KPIRepository kpiRepository;
 
-    public CycleService(CycleRepository cycleRepository, KpiRepository kpiRepository) {
+    public CycleService(CycleRepository cycleRepository, KPIRepository kpiRepository) {
         this.cycleRepository = cycleRepository;
         this.kpiRepository = kpiRepository;
     }
