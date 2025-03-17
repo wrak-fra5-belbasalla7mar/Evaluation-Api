@@ -1,6 +1,8 @@
 package com.spring.evalapi.service;
 
 
+import com.spring.evalapi.common.exception.CycleNotFoundException;
+import com.spring.evalapi.common.exception.KpiNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.KPI;
 import com.spring.evalapi.repository.CycleRepository;
@@ -38,25 +40,29 @@ public class KPIService {
     public KPI addKPI(KPI kpi) {
         if (kpi.getCycle()!=null) {
             Cycle cycle = cycleRepository.findById(kpi.getCycle().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Cycle not found !"));
+                    .orElseThrow(() -> new CycleNotFoundException());
             kpi.setCycle(cycle);
         }
         return kpiRepository.save(kpi);
     }
     public KPI updateKPI(KPI kpi) {
-        if (!kpiRepository.existsById(kpi.getId())){
-            throw new IllegalArgumentException("KPI  not Found");
+        if (!kpiRepository.existsById(kpi.getId())) {
+            throw new KpiNotFoundException();
         }
-        if (kpi.getCycle()!=null) {
+
+        KPI existingKPI = kpiRepository.findById(kpi.getId())
+                .orElseThrow(() -> new KpiNotFoundException());
+
+        if (kpi.getCycle() != null && kpi.getCycle().getId() != null) {
             Cycle cycle = cycleRepository.findById(kpi.getCycle().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Cycle not found !"));
-            kpi.setCycle(cycle);
+                    .orElseThrow(() -> new CycleNotFoundException());
+            existingKPI.setCycle(cycle);
         }
         return kpiRepository.save(kpi);
     }
     public String deleteKPI(long id) {
         if (!kpiRepository.existsById(id)){
-            throw new IllegalArgumentException("KPI is Already not Found");
+            throw new KpiNotFoundException();
         }
         kpiRepository.deleteById(id);
         return "KPI was Deleted Successfully!";

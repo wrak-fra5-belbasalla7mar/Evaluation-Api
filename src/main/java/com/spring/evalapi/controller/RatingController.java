@@ -17,9 +17,9 @@ public class RatingController {
     @Autowired
     private RatingService ratingService;
 
-    @PostMapping("/kpi/{kpiId}")
-    public ResponseEntity<Rating>addRating(@PathVariable Long kpiId, @RequestBody Rating rating){
-        return ResponseEntity.ok(ratingService.addRating(kpiId, rating));
+    @PutMapping
+    public ResponseEntity<Rating>addRating( @RequestBody Rating rating){
+        return ResponseEntity.ok(ratingService.addRating( rating));
     }
 
     @GetMapping("/{id}")
@@ -32,7 +32,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getRatingsByKpiId(kpiId));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String>deleteRating(@PathVariable Long id){
         return ResponseEntity.ok(ratingService.deleteRating(id));
     }

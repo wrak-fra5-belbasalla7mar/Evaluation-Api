@@ -33,12 +33,12 @@ public class Rating {
         this.kpi = kpiId;
     }
 
-    public KPI getKpiId() {
+    public KPI getKpi() {
         return kpi;
     }
 
-    public void setKpiId(KPI kpiId) {
-        this.kpi = kpiId;
+    public void setKpi(KPI kpi) {
+        this.kpi = kpi;
     }
 
     public long getId() {
