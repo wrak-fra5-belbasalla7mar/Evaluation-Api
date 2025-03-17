@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Repository
 public interface CycleRepository extends JpaRepository<Cycle,Long> {
 
-    @Query("SELECT c FROM Cycle c ORDER BY ABS(TIMESTAMPDIFF(SECOND, c.startDate, :now)) ASC")
+    @Query("SELECT c FROM Cycle c ORDER BY ABS(FUNCTION('DATEDIFF', c.startDate, :now)) ASC")
     Cycle findFirstCycleClosestToNow(@Param("now") LocalDateTime now);
+
 }

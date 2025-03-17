@@ -36,10 +36,12 @@ public class CycleService {
 
     public Cycle viewCycle() {
         LocalDateTime now = LocalDateTime.now();
+        System.out.println(now);
         return cycleRepository.findFirstCycleClosestToNow(now);
     }
 
     public void deleteCycle(long id) {
+
         cycleRepository.deleteById(id);
     }
 

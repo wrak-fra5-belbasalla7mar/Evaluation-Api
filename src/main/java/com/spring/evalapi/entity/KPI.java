@@ -17,7 +17,7 @@ public class KPI {
     @JoinColumn(name = "cycle_id")
     private Cycle cycle;
 
-    @OneToMany(mappedBy = "kpi")
+    @OneToMany(mappedBy = "kpi" ,cascade = CascadeType.ALL )
     private List<Rating> ratings;
 
     @ManyToOne

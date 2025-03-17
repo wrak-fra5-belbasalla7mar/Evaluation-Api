@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 public class CycleController {
 
     private final CycleService cycleService;
-    private CycleMapper cycleMapper;
+
+
     public CycleController(CycleService cycleService) {
         this.cycleService = cycleService;
     }
@@ -19,7 +20,6 @@ public class CycleController {
     @PostMapping("")
     public Cycle addCycle(@RequestBody Cycle cycle){
         cycleService.addCycle(cycle);
-
         return cycle;
     }
 
@@ -28,8 +28,8 @@ public class CycleController {
         return cycleService.viewCycle();
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteCycle(@PathVariable("id") int id){
+    @DeleteMapping("")
+    public String deleteCycle(@RequestParam int id){
         cycleService.deleteCycle(id);
         return "deleted";
     }

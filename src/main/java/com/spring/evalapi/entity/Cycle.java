@@ -22,10 +22,10 @@ public class Cycle {
     @Enumerated(EnumType.STRING)
     private CycleState state=CycleState.CLOSED;
 
-    @OneToMany(mappedBy = "cycle", orphanRemoval = true)
+    @OneToMany(mappedBy = "cycle", orphanRemoval = true ,cascade = CascadeType.ALL)
     private List<KPI> kpis;
 
-    @OneToMany(mappedBy = "cycle",  orphanRemoval = true)
+    @OneToMany(mappedBy = "cycle",  orphanRemoval = true ,cascade = CascadeType.ALL)
     private List<Objectives> objectives;
 
     @OneToMany(mappedBy = "cycle")
