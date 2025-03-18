@@ -59,6 +59,7 @@ public class CycleService {
         return cycleRepository.save(cycle);
     }
 
+    @Transactional
     public Cycle putObjectives(List<Objective> objectives){
         Cycle cycle =cycleRepository.findLatestCycle();
         cycle.setObjectives(objectives);

@@ -5,15 +5,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 @Entity
 public class Objective {
 
     @Id
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotNull(message = "provide a user id")
-    private long assignedUserId;
+    private Long assignedUserId;
 
     @NotBlank(message = "objective name is required")
     private String title;
@@ -21,18 +23,14 @@ public class Objective {
     @NotBlank(message = "description name is required")
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "cycle_id")
     private Cycle cycle;
 
-    public Objective() {
-    }
+    @NotBlank(message = "deadline name is required")
+    private LocalDate deadline;
 
-    public Objective(long assignedUserId, String title, String description, Cycle cycleId) {
-        this.assignedUserId = assignedUserId;
-        this.title = title;
-        this.description = description;
-        this.cycle = cycleId;
+    public Objective() {
     }
 
     public long getAssignedUserId() {
@@ -43,11 +41,11 @@ public class Objective {
         this.assignedUserId = assignedUserId;
     }
 
-    public Cycle getCycleId() {
+    public Cycle getCycle() {
         return cycle;
     }
 
-    public void setCycleId(Cycle cycleId) {
+    public void setCycle(Cycle cycleId) {
         this.cycle = cycleId;
     }
 
@@ -76,4 +74,13 @@ public class Objective {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
+
 }

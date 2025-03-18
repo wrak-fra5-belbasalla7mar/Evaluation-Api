@@ -29,7 +29,7 @@ public class CycleController {
     @GetMapping("")
     public ResponseEntity<Cycle> getLatestCycle() {
         Cycle latestCycle = cycleService.ViewTheLatestCycle();
-        return ResponseEntity.ok(latestCycle);
+        return ResponseEntity.status(HttpStatus.OK).body(latestCycle);
     }
 
     @PutMapping("/open")

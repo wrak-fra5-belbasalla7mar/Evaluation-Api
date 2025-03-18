@@ -96,4 +96,29 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(CycleNotOpenException.class)
+    public ResponseEntity<ErrorResponse> handleCycleNotOpenException(CycleNotOpenException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "CYCLE_NOT_OPEN",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", ""),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ObjectiveForUserNotFound.class)
+    public ResponseEntity<ErrorResponse> handleObjectiveForUserNotFound(ObjectiveForUserNotFound ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "OBJECTIVE_NOT_FOUND",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", ""),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
 }
