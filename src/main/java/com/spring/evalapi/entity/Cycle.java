@@ -39,17 +39,12 @@ public class Cycle {
         kpi.setCycle(this);
     }
 
-
     @OneToMany(mappedBy = "cycle", orphanRemoval = true ,cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<KPI> kpis = new ArrayList<>();
 
     @OneToMany(mappedBy = "cycle",  orphanRemoval = true ,cascade = CascadeType.ALL)
     private List<Objective> objectives;
-
-//    @OneToMany(mappedBy = "cycle")
-//    private List<Profile> profiles;
-
 
     public Cycle() {
     }

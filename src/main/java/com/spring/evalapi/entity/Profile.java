@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table(name = "profiles")
 public class Profile {
 
     @Id
@@ -24,9 +23,10 @@ public class Profile {
     public Profile() {
     }
 
-    public Profile(String name, Map<String, Float> weights) {
+    public Profile(String name, Map<String, Float> weights, List<KPI> kpis) {
         this.name = name;
         this.weights = weights;
+        this.kpis = kpis;
     }
 
     public long getId() {
