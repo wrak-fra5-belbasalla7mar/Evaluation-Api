@@ -1,63 +1,62 @@
-//package com.spring.evalapi.entity;
-//
-//import jakarta.persistence.*;
-//
-//import java.util.List;
-//
-//@Entity
-//@Table(name = "kpi_profiles")
-//public class Profile {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private long id;
-//    private String name;
-//
-//    @OneToMany(mappedBy = "profile")
-//    private List<KPI> kpis;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "cycle_id")
-//    private Cycle cycle;
-//
-//    public Profile() {
-//    }
-//
-//    public Profile(String name, List<KPI> kpis, Cycle cycle) {
-//        this.name = name;
-//        this.kpis = kpis;
-//        this.cycle = cycle;
-//    }
-//
-//    public long getId() {
-//        return id;
-//    }
-//
-//    public void setId(long id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public List<KPI> getKpis() {
-//        return kpis;
-//    }
-//
-//    public void setKpis(List<KPI> kpis) {
-//        this.kpis = kpis;
-//    }
-//
-//    public Cycle getCycle() {
-//        return cycle;
-//    }
-//
-//    public void setCycle(Cycle cycle) {
-//        this.cycle = cycle;
-//    }
-//}
+package com.spring.evalapi.entity;
+
+import jakarta.persistence.*;
+
+import java.util.List;
+import java.util.Map;
+
+@Entity
+@Table(name = "profiles")
+public class Profile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String name;
+
+    @ElementCollection
+    @MapKeyColumn(name = "role_level")
+    @Column(name = "weight")
+    private Map<String, Float> weights;
+
+    @OneToMany(mappedBy = "profile")
+    private List<KPI> kpis;
+    public Profile() {
+    }
+
+    public Profile(String name, Map<String, Float> weights) {
+        this.name = name;
+        this.weights = weights;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<KPI> getKpis() {
+        return kpis;
+    }
+
+    public void setKpis(List<KPI> kpis) {
+        this.kpis = kpis;
+    }
+    public Map<String, Float> getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Map<String, Float> weights) {
+        this.weights = weights;
+    }
+}

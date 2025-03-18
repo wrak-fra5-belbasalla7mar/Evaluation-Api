@@ -3,17 +3,19 @@ package com.spring.evalapi.service;
 import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.KpiAlreadyAssignedException;
 import com.spring.evalapi.common.exception.KpiNotFoundException;
+import com.spring.evalapi.common.exception.ProfileNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.KPI;
+import com.spring.evalapi.entity.Profile;
 import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KPIRepository;
+
+import com.spring.evalapi.repository.ProfileRepository;
 import com.spring.evalapi.utils.CycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
 public class KPIService {
 
@@ -23,15 +25,26 @@ public class KPIService {
     @Autowired
     private CycleRepository cycleRepository;
 
-    public Optional<KPI> getKPIById(Long id) {
-        return kpiRepository.findById(id);
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    public KPI getKPIById(Long id) {
+        return kpiRepository.findById(id)
+                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
     }
 
     public List<KPI> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
 
-    public KPI addKPI(KPI kpi) {
+    public List<KPI> getKPIsByProfileId(Long profileId) {
+        return kpiRepository.findByProfile_Id(profileId);
+    }
+
+    public KPI addKPI(Long profileId, KPI kpi) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException("Profile with ID " + profileId + " not found"));
+        kpi.setProfile(profile);
         return kpiRepository.save(kpi);
     }
 
@@ -46,8 +59,11 @@ public class KPIService {
         if (kpiDetails.getName() != null && !kpiDetails.getName().isEmpty()) {
             existingKPI.setName(kpiDetails.getName());
         }
-        if (kpiDetails.getWeights() != null && !kpiDetails.getWeights().isEmpty()) {
-            existingKPI.setWeights(kpiDetails.getWeights());
+
+        if (kpiDetails.getProfile() != null && kpiDetails.getProfile().getId() != 0) {
+            Profile newProfile = profileRepository.findById(kpiDetails.getProfile().getId())
+                    .orElseThrow(() -> new ProfileNotFoundException("Profile with ID " + kpiDetails.getProfile().getId() + " not found"));
+            existingKPI.setProfile(newProfile);
         }
 
         return kpiRepository.save(existingKPI);

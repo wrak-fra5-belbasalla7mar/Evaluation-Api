@@ -1,6 +1,5 @@
 package com.spring.evalapi.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
@@ -8,59 +7,38 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
+@Table(name = "kpis")
 public class KPI {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_id")
     @JsonBackReference
     private Cycle cycle;
 
-//    @ManyToOne
-//    @JoinColumn(name = "profile_id")
-//    private Profile profile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
-
-    @ElementCollection
-    @MapKeyColumn(name = "role_level")
-    @Column(name = "weight")
-    private Map<String, Float> weights;
-//
-//    @ManyToMany(mappedBy = "kpis")
-//    private List<Cycle> cycles;
-
-
-    @OneToMany(mappedBy = "kpi" ,cascade = CascadeType.ALL )
+    @OneToMany(mappedBy = "kpi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Rating> ratings;
 
     public KPI() {
     }
 
-    public KPI(String name, Cycle cycle, Map<String, Float> weights, List<Rating> ratings) {
+    public KPI(String name, Cycle cycle, Profile profile, List<Rating> ratings) {
         this.name = name;
         this.cycle = cycle;
-        this.weights = weights;
+        this.profile = profile;
         this.ratings = ratings;
     }
 
-    public Map<String, Float> getWeights() {
-        return weights;
-    }
-
-    public void setWeights(Map<String, Float> weights) {
-        this.weights = weights;
-    }
-
-    public Cycle getCycle() {
-        return cycle;
-    }
-
-    public void setCycle(Cycle cycle) {
-        this.cycle = cycle;
-    }
     public Long getId() {
         return id;
     }
@@ -77,6 +55,22 @@ public class KPI {
         this.name = name;
     }
 
+    public Cycle getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Cycle cycle) {
+        this.cycle = cycle;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
     public List<Rating> getRatings() {
         return ratings;
     }
@@ -85,13 +79,7 @@ public class KPI {
         this.ratings = ratings;
     }
 
-
-
-//    public Profile getProfile() {
-//        return profile;
-//    }
-//
-//    public void setProfile(Profile profile) {
-//        this.profile = profile;
-//    }
+    public Map<String, Float> getWeights() {
+        return this.profile != null ? this.profile.getWeights() : null;
+    }
 }
