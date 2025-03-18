@@ -2,9 +2,11 @@ package com.spring.evalapi.common.exception;
 
 public class KpiNotFoundException extends RuntimeException {
 
-    private static final String errorMessage = "KPI not found ";
+    public KpiNotFoundException(String message) {
+        super(message);
+    }
 
-    public KpiNotFoundException() {
-        super(errorMessage);
+    public KpiNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

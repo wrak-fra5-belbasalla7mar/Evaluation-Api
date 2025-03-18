@@ -1,21 +1,16 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.entity.Objectives;
+import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.utils.CycleState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.evalapi.dto.NewCycleDto;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.KPI;
 import com.spring.evalapi.repository.CycleRepository;
-import com.spring.evalapi.repository.KPIRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CycleService {
@@ -64,7 +59,7 @@ public class CycleService {
         return cycleRepository.save(cycle);
     }
 
-    public Cycle putObjectives(List<Objectives> objectives){
+    public Cycle putObjectives(List<Objective> objectives){
         Cycle cycle =cycleRepository.findLatestCycle();
         cycle.setObjectives(objectives);
         return cycleRepository.save(cycle);

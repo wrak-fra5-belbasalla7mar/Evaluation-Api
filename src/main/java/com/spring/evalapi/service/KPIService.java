@@ -1,13 +1,13 @@
 package com.spring.evalapi.service;
 
-
 import com.spring.evalapi.common.exception.CycleNotFoundException;
+import com.spring.evalapi.common.exception.KpiAlreadyAssignedException;
 import com.spring.evalapi.common.exception.KpiNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.KPI;
 import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KPIRepository;
-import jakarta.validation.constraints.NotBlank;
+import com.spring.evalapi.utils.CycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,51 +21,57 @@ public class KPIService {
     private KPIRepository kpiRepository;
 
     @Autowired
-    private CycleRepository  cycleRepository;
+    private CycleRepository cycleRepository;
 
-    public Optional<KPI> getKPIById(long id) {
+    public Optional<KPI> getKPIById(Long id) {
         return kpiRepository.findById(id);
     }
 
-
-    public List<KPI> getKPIsByCycleId(long cycleId) {
+    public List<KPI> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
 
-
-//    public List<KPI> getKPIsByKPIProfileId(long kpiProfileId) {
-//        return kpiRepository.findByProfile_Id(kpiProfileId);
-//    }
-
     public KPI addKPI(KPI kpi) {
-        if (kpi.getCycle()!=null) {
-            Cycle cycle = cycleRepository.findById(kpi.getCycle().getId())
-                    .orElseThrow(() -> new CycleNotFoundException());
-            kpi.setCycle(cycle);
-        }
         return kpiRepository.save(kpi);
     }
-    public KPI updateKPI(KPI kpi) {
-        if (!kpiRepository.existsById(kpi.getId())) {
-            throw new KpiNotFoundException();
+
+    public KPI updateKPI(KPI kpiDetails) {
+        if (!kpiRepository.existsById(kpiDetails.getId())) {
+            throw new KpiNotFoundException("KPI with ID " + kpiDetails.getId() + " not found");
         }
 
-        KPI existingKPI = kpiRepository.findById(kpi.getId())
-                .orElseThrow(() -> new KpiNotFoundException());
+        KPI existingKPI = kpiRepository.findById(kpiDetails.getId())
+                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
 
-        if (kpi.getCycle() != null && kpi.getCycle().getId() != null) {
-            Cycle cycle = cycleRepository.findById(kpi.getCycle().getId())
-                    .orElseThrow(() -> new CycleNotFoundException());
-            existingKPI.setCycle(cycle);
+        if (kpiDetails.getName() != null && !kpiDetails.getName().isEmpty()) {
+            existingKPI.setName(kpiDetails.getName());
         }
+        if (kpiDetails.getWeights() != null && !kpiDetails.getWeights().isEmpty()) {
+            existingKPI.setWeights(kpiDetails.getWeights());
+        }
+
+        return kpiRepository.save(existingKPI);
+    }
+
+    public KPI assignKpiToCycle(Long kpiId, Long cycleId) {
+        KPI kpi = kpiRepository.findById(kpiId)
+                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
+        Cycle cycle = cycleRepository.findById(cycleId)
+                .orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
+
+        if (kpi.getCycle() != null && kpi.getCycle().getCycleState() == CycleState.OPEN) {
+            throw new KpiAlreadyAssignedException("KPI is already assigned to an open cycle");
+        }
+
+        kpi.setCycle(cycle);
         return kpiRepository.save(kpi);
     }
-    public String deleteKPI(long id) {
-        if (!kpiRepository.existsById(id)){
-            throw new KpiNotFoundException();
+
+    public String deleteKPI(Long id) {
+        if (!kpiRepository.existsById(id)) {
+            throw new KpiNotFoundException("KPI with ID " + id + " not found");
         }
         kpiRepository.deleteById(id);
         return "KPI was Deleted Successfully!";
     }
-
 }

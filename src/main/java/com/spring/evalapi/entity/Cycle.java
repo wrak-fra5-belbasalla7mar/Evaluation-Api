@@ -45,7 +45,7 @@ public class Cycle {
     private List<KPI> kpis = new ArrayList<>();
 
     @OneToMany(mappedBy = "cycle",  orphanRemoval = true ,cascade = CascadeType.ALL)
-    private List<Objectives> objectives;
+    private List<Objective> objectives;
 
 //    @OneToMany(mappedBy = "cycle")
 //    private List<Profile> profiles;
@@ -119,11 +119,11 @@ public class Cycle {
         this.kpis = kpis;
     }
 
-    public List<Objectives> getObjectives() {
+    public List<Objective> getObjectives() {
         return objectives;
     }
 
-    public void setObjectives(List<Objectives> objectives) {
+    public void setObjectives(List<Objective> objectives) {
         this.objectives = objectives;
     }
 }

@@ -2,7 +2,6 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.KpiNotFoundException;
 import com.spring.evalapi.common.exception.RatingNotFoundException;
-import com.spring.evalapi.entity.KPI;
 import com.spring.evalapi.entity.Rating;
 import com.spring.evalapi.repository.KPIRepository;
 import com.spring.evalapi.repository.RatingRepository;
@@ -22,7 +21,7 @@ public class RatingService {
     private KPIRepository kpiRepository;
 
     public Rating addRating(Rating rating) {
-        if (kpiRepository.findById(rating.getKpi().getId())==null)throw new KpiNotFoundException();
+        if (kpiRepository.findById(rating.getKpi().getId())==null)throw new KpiNotFoundException("KPI with ID " + rating.getKpi().getId() + " not found");
         return ratingRepository.save(rating);
     }
 

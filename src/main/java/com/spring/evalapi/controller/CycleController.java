@@ -3,7 +3,7 @@ package com.spring.evalapi.controller;
 
 import com.spring.evalapi.dto.NewCycleDto;
 import com.spring.evalapi.entity.Cycle;
-import com.spring.evalapi.entity.Objectives;
+import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.service.CycleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -51,15 +51,8 @@ public class CycleController {
     }
 
     @PutMapping("/objectives")
-    public ResponseEntity<Cycle> putObjectives(@RequestBody List<Objectives> objectives) {
+    public ResponseEntity<Cycle> putObjectives(@RequestBody List<Objective> objectives) {
         Cycle cycle = cycleService.putObjectives(objectives);
         return ResponseEntity.ok(cycle);
     }
-
-
-
-
-
-
-
 }

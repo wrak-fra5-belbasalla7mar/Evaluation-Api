@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-public class Objectives {
+public class Objective {
 
     @Id
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
@@ -25,10 +25,10 @@ public class Objectives {
     @JoinColumn(name = "cycle_id")
     private Cycle cycle;
 
-    public Objectives() {
+    public Objective() {
     }
 
-    public Objectives(long assignedUserId, String title, String description, Cycle cycleId) {
+    public Objective(long assignedUserId, String title, String description, Cycle cycleId) {
         this.assignedUserId = assignedUserId;
         this.title = title;
         this.description = description;

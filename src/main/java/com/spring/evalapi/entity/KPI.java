@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class KPI {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,15 +23,35 @@ public class KPI {
 //    @JoinColumn(name = "profile_id")
 //    private Profile profile;
 
+
+    @ElementCollection
+    @MapKeyColumn(name = "role_level")
+    @Column(name = "weight")
+    private Map<String, Float> weights;
+//
+//    @ManyToMany(mappedBy = "kpis")
+//    private List<Cycle> cycles;
+
+
     @OneToMany(mappedBy = "kpi" ,cascade = CascadeType.ALL )
     private List<Rating> ratings;
 
     public KPI() {
     }
 
-    public KPI(String name, Cycle cycle) {
+    public KPI(String name, Cycle cycle, Map<String, Float> weights, List<Rating> ratings) {
         this.name = name;
         this.cycle = cycle;
+        this.weights = weights;
+        this.ratings = ratings;
+    }
+
+    public Map<String, Float> getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Map<String, Float> weights) {
+        this.weights = weights;
     }
 
     public Cycle getCycle() {

@@ -16,7 +16,6 @@ public class KPIController {
 
 
 
-
     @Autowired
     private  KPIService kpiService;
     @GetMapping("/cycle/{cycleId}")
@@ -24,10 +23,7 @@ public class KPIController {
         return ResponseEntity.ok(kpiService.getKPIsByCycleId(cycleId));
     }
 
-//    @GetMapping("/kpiProfile/{kpiProfileId}")
-//    public ResponseEntity<List<KPI>> getKPIsByKPIProfileId(@PathVariable long kpiProfileId) {
-//        return ResponseEntity.ok(kpiService.getKPIsByKPIProfileId(kpiProfileId));
-//    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<KPI>>getKPIById(@PathVariable Long id){
