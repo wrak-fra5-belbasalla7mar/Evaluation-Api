@@ -1,67 +1,73 @@
 package com.spring.evalapi.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
-import java.util.List;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long submitterId;
-    private long ratedPersonId;
+    private Long id;
 
-    @Transient
+    @NotNull(message = "Submitter ID is required")
+    private Long submitterId;
+
+    @NotNull(message = "Rated person ID is required")
+    private Long ratedPersonId;
+
+    @NotNull(message = "Score is required")
+    @Min(value = 1, message = "Score must be at least 1")
+    @Max(value = 5, message = "Score must be at most 5")
     private Float score;
+
     private String feedback;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kpi_id")
+    @JsonBackReference
     private KPI kpi;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cycle_id")
+    @JsonBackReference
+    private Cycle cycle;
 
     public Rating() {
     }
 
-    public Rating(long submitterId, long ratedPersonId, Float score, String feedback, KPI kpiId) {
+    public Rating(Long submitterId, Long ratedPersonId, Float score, String feedback, KPI kpi) {
         this.submitterId = submitterId;
         this.ratedPersonId = ratedPersonId;
         this.score = score;
         this.feedback = feedback;
-        this.kpi = kpiId;
-    }
-
-    public KPI getKpi() {
-        return kpi;
-    }
-
-    public void setKpi(KPI kpi) {
         this.kpi = kpi;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getSubmitterId() {
+    public Long getSubmitterId() {
         return submitterId;
     }
 
-    public void setSubmitterId(long submitterId) {
+    public void setSubmitterId(Long submitterId) {
         this.submitterId = submitterId;
     }
 
-    public long getRatedPersonId() {
+    public Long getRatedPersonId() {
         return ratedPersonId;
     }
 
-    public void setRatedPersonId(long ratedPersonId) {
+    public void setRatedPersonId(Long ratedPersonId) {
         this.ratedPersonId = ratedPersonId;
     }
 
@@ -79,5 +85,21 @@ public class Rating {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public KPI getKpi() {
+        return kpi;
+    }
+
+    public void setKpi(KPI kpi) {
+        this.kpi = kpi;
+    }
+
+    public Cycle getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Cycle cycle) {
+        this.cycle = cycle;
     }
 }

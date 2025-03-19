@@ -45,10 +45,13 @@ public class Cycle {
         objective.setCycle(this);
     }
 
-    @OneToMany(mappedBy = "cycle", orphanRemoval = true ,cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<KPI> kpis = new ArrayList<>();
-
+    @ManyToMany
+    @JoinTable(
+            name = "cycle_kpi",
+            joinColumns = @JoinColumn(name = "cycle_id"),
+            inverseJoinColumns = @JoinColumn(name = "kpi_id")
+    )
+    private List<KPI> kpis;
     @OneToMany(mappedBy = "cycle",  orphanRemoval = true ,cascade = CascadeType.ALL)
     private List<Objective> objectives;
 

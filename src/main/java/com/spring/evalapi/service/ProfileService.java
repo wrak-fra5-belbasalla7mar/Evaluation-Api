@@ -3,7 +3,7 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.ProfileNotFoundException;
 import com.spring.evalapi.entity.Profile;
-import com.spring.evalapi.repository.KPIRepository;
+
 import com.spring.evalapi.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

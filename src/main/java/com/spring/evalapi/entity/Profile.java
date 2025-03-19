@@ -1,6 +1,8 @@
 package com.spring.evalapi.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -11,15 +13,19 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotEmpty(message = "Profile name cannot be empty")
     private String name;
 
+    @NotNull(message = "Weights cannot be null")
     @ElementCollection
     @MapKeyColumn(name = "role_level")
     @Column(name = "weight")
     private Map<String, Float> weights;
 
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<KPI> kpis;
+
     public Profile() {
     }
 
@@ -52,6 +58,7 @@ public class Profile {
     public void setKpis(List<KPI> kpis) {
         this.kpis = kpis;
     }
+
     public Map<String, Float> getWeights() {
         return weights;
     }

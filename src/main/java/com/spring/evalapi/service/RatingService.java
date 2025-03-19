@@ -29,7 +29,7 @@ public class RatingService {
         return ratingRepository.findById(id);
     }
     public List<Rating>getRatingsByKpiId(Long kpiId){
-        return ratingRepository.findByKpi_id(kpiId);
+        return ratingRepository.findByKpi_Id(kpiId);
     }
 
     public String deleteRating(Long id){
@@ -37,5 +37,16 @@ public class RatingService {
             throw new RatingNotFoundException();
         ratingRepository.deleteById(id);
         return "Rating Deleted Successfully!";
+    }
+    public List<Rating> getRatingsByCycleId(Long cycleId) {
+        return ratingRepository.findByCycle_Id(cycleId);
+    }
+
+    public List<Rating> getRatingsByRatedPersonId(Long ratedPersonId) {
+        return ratingRepository.findByRatedPersonId(ratedPersonId);
+    }
+
+    public List<Rating> getRatingsByCycleIdAndRatedPersonId(Long cycleId, Long ratedPersonId) {
+        return ratingRepository.findByCycle_IdAndRatedPersonId(cycleId, ratedPersonId);
     }
 }

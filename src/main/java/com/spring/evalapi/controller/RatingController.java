@@ -6,7 +6,6 @@ import com.spring.evalapi.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -36,4 +35,18 @@ public class RatingController {
     public ResponseEntity<String>deleteRating(@PathVariable Long id){
         return ResponseEntity.ok(ratingService.deleteRating(id));
     }
+
+    @GetMapping("/cycle/{cycleId}")
+    public ResponseEntity<List<Rating>> getRatingsByCycleId(@PathVariable Long cycleId) {
+        return ResponseEntity.ok(ratingService.getRatingsByCycleId(cycleId));
+    }
+    @GetMapping("/ratedPerson/{ratedPersonId}")
+    public ResponseEntity<List<Rating>> getRatingsByRatedPersonId(@PathVariable Long ratedPersonId) {
+        return ResponseEntity.ok(ratingService.getRatingsByRatedPersonId(ratedPersonId));
+    }
+    @GetMapping("/cycle/{cycleId}/ratedPerson/{ratedPersonId}")
+    public ResponseEntity<List<Rating>> getRatingsByCycleIdAndRatedPersonId(@PathVariable Long cycleId, @PathVariable Long ratedPersonId) {
+        return ResponseEntity.ok(ratingService.getRatingsByCycleIdAndRatedPersonId(cycleId, ratedPersonId));
+    }
+
 }

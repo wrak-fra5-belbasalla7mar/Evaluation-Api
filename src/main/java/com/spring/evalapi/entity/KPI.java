@@ -16,9 +16,7 @@ public class KPI {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cycle_id")
-    @JsonBackReference
+    @ManyToOne
     private Cycle cycle;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +36,18 @@ public class KPI {
         this.ratings = ratings;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Cycle getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Cycle cycle) {
+        this.cycle = cycle;
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,13 +64,6 @@ public class KPI {
         this.name = name;
     }
 
-    public Cycle getCycle() {
-        return cycle;
-    }
-
-    public void setCycle(Cycle cycle) {
-        this.cycle = cycle;
-    }
 
     public Profile getProfile() {
         return profile;
