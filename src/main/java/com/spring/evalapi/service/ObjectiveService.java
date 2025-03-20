@@ -48,7 +48,7 @@ public class ObjectiveService {
         return objectiveRepository.saveAll(objectives);
     }
 
-    public Objective findByAssignId(int id){
+    public Objective findByAssignId(Long id){
         Objective objective = objectiveRepository.findByAssignedUserId(id);
         if (objective == null) {
             throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
@@ -57,7 +57,7 @@ public class ObjectiveService {
     }
 
     @Transactional
-    public String deleteByAssignId(int id) {
+    public String deleteByAssignId(Long id) {
         Objective objective = objectiveRepository.findByAssignedUserId(id);
         if (objective == null) {
             throw new ObjectiveForUserNotFound(String.format("User with ID: %d is not found", id));
@@ -67,7 +67,7 @@ public class ObjectiveService {
     }
 
     @Transactional
-    public Objective UpdateByAssignId(int id , Objective updateObjective){
+    public Objective UpdateByAssignId(Long id , Objective updateObjective){
         Objective objective = objectiveRepository.findByAssignedUserId(id);
         if (objective == null) {
             throw new ObjectiveForUserNotFound(String.format("User with ID: %d is not found", id));

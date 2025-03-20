@@ -7,5 +7,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Repository
 public interface ObjectiveRepository extends JpaRepository<Objective,Integer> {
-    Objective findByAssignedUserId(int id);
+    Objective findByAssignedUserId(Long id);
 }

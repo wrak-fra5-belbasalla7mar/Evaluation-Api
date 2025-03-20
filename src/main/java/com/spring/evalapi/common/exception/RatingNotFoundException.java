@@ -2,9 +2,11 @@ package com.spring.evalapi.common.exception;
 
 public class RatingNotFoundException extends RuntimeException {
 
-    private static final String errorMessage = "Rating not found ";
+    public RatingNotFoundException(String message) {
+        super(message);
+    }
 
-    public RatingNotFoundException() {
-        super(errorMessage);
+    public RatingNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

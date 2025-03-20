@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/cycle")
+@RequestMapping("cycles")
 public class CycleController {
     private final CycleService cycleService;
     public CycleController(CycleService cycleService) {

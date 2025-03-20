@@ -22,5 +22,19 @@ public class ProfileService {
     public List<Profile> getAllProfiles(){
         return profileRepository.findAll();
     }
+    public Profile addProfile(Profile profile){
+        return profileRepository.save(profile);
+    }
+
+    public Profile updateProfile(Profile profile){
+        return profileRepository.save(profile);
+    }
+
+    public String deleteProfile(Long id){
+        if (!profileRepository.existsById(id))
+            throw new ProfileNotFoundException("Profile with ID " + id + " not found");
+        profileRepository.deleteById(id);
+        return "Profile Deleted Successfully!";
+    }
 
 }

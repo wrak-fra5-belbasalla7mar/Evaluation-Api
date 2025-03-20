@@ -1,4 +1,5 @@
 package com.spring.evalapi.common.exception;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,8 +15,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(KpiNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleKpiNotFoundException(KpiNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(RatingNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleKpiNotFoundException(RatingNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "KPI_NOT_FOUND",
@@ -120,5 +121,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "FORBIDDEN",
+                "Access Denied: You do not have permission to access this resource.",
+                request.getRequestURI(),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
 }

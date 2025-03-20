@@ -2,7 +2,7 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.KpiAlreadyAssignedException;
-import com.spring.evalapi.common.exception.KpiNotFoundException;
+import com.spring.evalapi.common.exception.RatingNotFoundException;
 import com.spring.evalapi.common.exception.ProfileNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.KPI;
@@ -30,7 +30,7 @@ public class KPIService {
 
     public KPI getKPIById(Long id) {
         return kpiRepository.findById(id)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
+                .orElseThrow(() -> new RatingNotFoundException("KPI with ID " + id + " not found"));
     }
 
     public List<KPI> getKPIsByCycleId(Long cycleId) {
@@ -50,11 +50,11 @@ public class KPIService {
 
     public KPI updateKPI(KPI kpiDetails) {
         if (!kpiRepository.existsById(kpiDetails.getId())) {
-            throw new KpiNotFoundException("KPI with ID " + kpiDetails.getId() + " not found");
+            throw new RatingNotFoundException("KPI with ID " + kpiDetails.getId() + " not found");
         }
 
         KPI existingKPI = kpiRepository.findById(kpiDetails.getId())
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
+                .orElseThrow(() -> new RatingNotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
 
         if (kpiDetails.getName() != null && !kpiDetails.getName().isEmpty()) {
             existingKPI.setName(kpiDetails.getName());
@@ -71,7 +71,7 @@ public class KPIService {
 
     public KPI assignKpiToCycle(Long kpiId, Long cycleId) {
         KPI kpi = kpiRepository.findById(kpiId)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
+                .orElseThrow(() -> new RatingNotFoundException("KPI with ID " + kpiId + " not found"));
         Cycle cycle = cycleRepository.findById(cycleId)
                 .orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
 
@@ -85,7 +85,7 @@ public class KPIService {
 
     public String deleteKPI(Long id) {
         if (!kpiRepository.existsById(id)) {
-            throw new KpiNotFoundException("KPI with ID " + id + " not found");
+            throw new RatingNotFoundException("KPI with ID " + id + " not found");
         }
         kpiRepository.deleteById(id);
         return "KPI was Deleted Successfully!";
