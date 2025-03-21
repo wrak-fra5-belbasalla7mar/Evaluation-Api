@@ -1,12 +1,19 @@
 package com.spring.evalapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Rating {
 
     @Id
@@ -29,23 +36,25 @@ public class Rating {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kpi_id")
-    @JsonBackReference
+
     private KPI kpi;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_id")
-    @JsonBackReference
     private Cycle cycle;
 
-    public Rating() {
-    }
 
-    public Rating(Long submitterId, Long ratedPersonId, Float score, String feedback, KPI kpi) {
+    public Rating(Long id, Long submitterId, Long ratedPersonId, Float score, String feedback, KPI kpi, Cycle cycle) {
+        this.id = id;
         this.submitterId = submitterId;
         this.ratedPersonId = ratedPersonId;
         this.score = score;
         this.feedback = feedback;
         this.kpi = kpi;
+        this.cycle = cycle;
+    }
+
+    public Rating() {
     }
 
     public Long getId() {

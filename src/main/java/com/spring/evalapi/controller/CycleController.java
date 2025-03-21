@@ -1,7 +1,4 @@
 package com.spring.evalapi.controller;
-
-
-import com.spring.evalapi.dto.NewCycleDto;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.service.CycleService;
@@ -15,15 +12,16 @@ import java.util.List;
 @RestController
 @RequestMapping("cycles")
 public class CycleController {
+
     private final CycleService cycleService;
     public CycleController(CycleService cycleService) {
         this.cycleService = cycleService;
     }
 
     @PostMapping("")
-    public ResponseEntity<Cycle> createCycle(@Valid @RequestBody NewCycleDto newCycleDto) {
-        Cycle cycle = cycleService.addCycle(newCycleDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cycle);
+    public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle) {
+            Cycle savedCycle = cycleService.addCycle(newCycle);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
 
     @GetMapping("")
@@ -50,9 +48,15 @@ public class CycleController {
         return ResponseEntity.ok(cycle);
     }
 
-    @PutMapping("/objectives")
-    public ResponseEntity<Cycle> putObjectives(@RequestBody List<Objective> objectives) {
-        Cycle cycle = cycleService.putObjectives(objectives);
+    @GetMapping("/{id}")
+    public ResponseEntity<Cycle> getCycleByID(@PathVariable("id") long id) {
+        Cycle cycle = cycleService.returnCycleByID(id);
         return ResponseEntity.ok(cycle);
     }
+
+    @DeleteMapping("/{id}")
+    public String deleteCycleById(@PathVariable ("id") long id){
+        return cycleService.deleteCycleById(id);
+    }
+
 }

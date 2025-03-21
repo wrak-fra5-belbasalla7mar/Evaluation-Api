@@ -1,7 +1,4 @@
 package com.spring.evalapi.service;
-
-
-import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.CycleNotOpenException;
 import com.spring.evalapi.common.exception.ObjectiveForUserNotFound;
 import com.spring.evalapi.entity.Cycle;
@@ -9,21 +6,17 @@ import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.ObjectiveRepository;
 import com.spring.evalapi.utils.CycleState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ObjectiveService {
 
-//    private static final Logger logger = LoggerFactory.getLogger(CycleService.class);
-
     private final ObjectiveRepository objectiveRepository;
     private final CycleRepository cycleRepository;
-
 
     public ObjectiveService( ObjectiveRepository objectiveRepository1, CycleRepository cycleRepository) {
         this.objectiveRepository = objectiveRepository1;
@@ -49,42 +42,42 @@ public class ObjectiveService {
     }
 
     public Objective findByAssignId(Long id){
-        Objective objective = objectiveRepository.findByAssignedUserId(id);
-        if (objective == null) {
+        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
+        if (objective.isEmpty()) {
             throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
         }
-        return objective;
+        return objective.get();
     }
 
     @Transactional
     public String deleteByAssignId(Long id) {
-        Objective objective = objectiveRepository.findByAssignedUserId(id);
-        if (objective == null) {
-            throw new ObjectiveForUserNotFound(String.format("User with ID: %d is not found", id));
+        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
+        if (objective.isEmpty()) {
+            throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
         }
-        objectiveRepository.delete(objective);
+        objectiveRepository.delete(objective.get());
         return String.format("Objective for user with ID: %d has been successfully deleted", id);
     }
 
     @Transactional
     public Objective UpdateByAssignId(Long id , Objective updateObjective){
-        Objective objective = objectiveRepository.findByAssignedUserId(id);
-        if (objective == null) {
-            throw new ObjectiveForUserNotFound(String.format("User with ID: %d is not found", id));
+        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
+        if (objective.isEmpty()) {
+            throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
         }
         if (updateObjective.getTitle() != null) {
-            objective.setTitle(updateObjective.getTitle());
+            objective.get().setTitle(updateObjective.getTitle());
         }
         if (updateObjective.getAssignedUserId() > 0) {
-            objective.setAssignedUserId(updateObjective.getAssignedUserId());
+            objective.get().setAssignedUserId(updateObjective.getAssignedUserId());
         }
         if (updateObjective.getDescription() != null) {
-            objective.setDescription(updateObjective.getDescription());
+            objective.get().setDescription(updateObjective.getDescription());
         }
         if (updateObjective.getDeadline() != null) {
-            objective.setDeadline(updateObjective.getDeadline());
+            objective.get().setDeadline(updateObjective.getDeadline());
         }
-        return objectiveRepository.save(objective);
+        return objectiveRepository.save(objective.get());
     }
 
 }

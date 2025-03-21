@@ -4,7 +4,7 @@ import com.spring.evalapi.common.exception.RatingNotFoundException;
 import com.spring.evalapi.entity.Rating;
 import com.spring.evalapi.repository.KPIRepository;
 import com.spring.evalapi.repository.RatingRepository;
-import com.spring.evalapi.security.JwtUtils;
+//import com.spring.evalapi.security.JwtUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ public class RatingService {
     @Autowired
     private KPIRepository kpiRepository;
 
-    @Autowired
-    private  JwtUtils jwtUtils;
+//    @Autowired
+//    private  JwtUtils jwtUtils;
     @Transactional
     public Rating addRating(Rating rating, String jwtToken) {
-        Long submitterId = jwtUtils.getUserIdFromJwtToken(jwtToken);
-        rating.setSubmitterId(submitterId);
-        if (kpiRepository.findById(rating.getKpi().getId())==null)throw new RatingNotFoundException("KPI with ID " + rating.getKpi().getId() + " not found");
+       // Long submitterId = jwtUtils.getUserIdFromJwtToken(jwtToken);
+       // rating.setSubmitterId(submitterId);
+       // if (kpiRepository.findById(rating.getKpi().getId())==null)throw new RatingNotFoundException("KPI with ID " + rating.getKpi().getId() + " not found");
         return ratingRepository.save(rating);
     }
 

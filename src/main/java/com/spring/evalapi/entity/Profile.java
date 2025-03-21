@@ -1,13 +1,20 @@
 package com.spring.evalapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Profile {
 
     @Id
@@ -26,15 +33,6 @@ public class Profile {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<KPI> kpis;
 
-    public Profile() {
-    }
-
-    public Profile(String name, Map<String, Float> weights, List<KPI> kpis) {
-        this.name = name;
-        this.weights = weights;
-        this.kpis = kpis;
-    }
-
     public long getId() {
         return id;
     }
@@ -51,6 +49,14 @@ public class Profile {
         this.name = name;
     }
 
+    public Map<String, Float> getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Map<String, Float> weights) {
+        this.weights = weights;
+    }
+
     public List<KPI> getKpis() {
         return kpis;
     }
@@ -59,11 +65,13 @@ public class Profile {
         this.kpis = kpis;
     }
 
-    public Map<String, Float> getWeights() {
-        return weights;
+    public Profile(long id, String name, Map<String, Float> weights, List<KPI> kpis) {
+        this.id = id;
+        this.name = name;
+        this.weights = weights;
+        this.kpis = kpis;
     }
 
-    public void setWeights(Map<String, Float> weights) {
-        this.weights = weights;
+    public Profile() {
     }
 }

@@ -75,7 +75,7 @@ public class KPIService {
         Cycle cycle = cycleRepository.findById(cycleId)
                 .orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
 
-        if (kpi.getCycle() != null && kpi.getCycle().getCycleState() == CycleState.OPEN) {
+        if (kpi.getCycle() != null && kpi.getCycle().getState() == CycleState.OPEN) {
             throw new KpiAlreadyAssignedException("KPI is already assigned to an open cycle");
         }
 

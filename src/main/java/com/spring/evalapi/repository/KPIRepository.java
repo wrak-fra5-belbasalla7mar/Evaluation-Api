@@ -11,7 +11,6 @@ import java.util.List;
 @Repository
 public interface KPIRepository extends JpaRepository<KPI,Long> {
     List<KPI> findByCycle_Id(Long cycleId);
-
     List<KPI> findByProfile_Id(Long kpiProfileId);
 
 }
