@@ -1,4 +1,5 @@
 package com.spring.evalapi.common.exception;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,17 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", ""),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(CycleStateException.class)
     public ResponseEntity<ErrorResponse> handleCycleStateException(CycleStateException ex, WebRequest request) {
@@ -27,8 +39,9 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
+
     @ExceptionHandler(KpiNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleKpiNotFoundException(RatingNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleKpiNotFoundException(KpiNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "KPI_NOT_FOUND",
@@ -63,16 +76,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-
-    @ExceptionHandler(ProfileNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleProfileNotFoundException(ProfileNotFoundException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("error", "Not Found");
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
-    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
         String errorMessage = ex.getBindingResult().getAllErrors().stream()
@@ -103,9 +106,9 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
-                "An unexpected error occurred",
+                "An unexpected error occurred: " + ex.getMessage(),
                 request.getDescription(false).replace("uri=", ""),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                LocalDateTime.now().toString()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -133,6 +136,7 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(

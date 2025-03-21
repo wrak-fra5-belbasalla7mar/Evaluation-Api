@@ -1,6 +1,5 @@
 package com.spring.evalapi.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.spring.evalapi.utils.CycleState;
 import jakarta.persistence.*;
@@ -36,13 +35,13 @@ public class Cycle {
     private CycleState state ;
 
     @OneToMany(mappedBy = "cycle", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<KPI> kpis = new ArrayList<>();
+    private List<Kpi> kpis = new ArrayList<>();
 
     @OneToMany(mappedBy = "cycle", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Objective> objectives = new ArrayList<>();
 
 
-    public void addKPI(KPI kpi) {
+    public void addKPI(Kpi kpi) {
         kpis.add(kpi);
         kpi.setCycle(this);
     }
@@ -51,7 +50,7 @@ public class Cycle {
         objective.setCycle(this);
     }
 
-    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<KPI> kpis) {
+    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -99,11 +98,11 @@ public class Cycle {
         this.state = state;
     }
 
-    public List<KPI> getKpis() {
+    public List<Kpi> getKpis() {
         return kpis;
     }
 
-    public void setKpis(List<KPI> kpis) {
+    public void setKpis(List<Kpi> kpis) {
         this.kpis = kpis;
     }
 
@@ -115,7 +114,7 @@ public class Cycle {
         this.objectives = objectives;
     }
 
-    public Cycle(Long id, String name, LocalDate startDate, LocalDate endDate, CycleState state, List<KPI> kpis, List<Objective> objectives) {
+    public Cycle(Long id, String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis, List<Objective> objectives) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;

@@ -2,15 +2,12 @@ package com.spring.evalapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -29,23 +26,26 @@ public class Rating {
     @NotNull(message = "Score is required")
     @Min(value = 1, message = "Score must be at least 1")
     @Max(value = 5, message = "Score must be at most 5")
-    @Transient
     private Float score;
 
     private String feedback;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "kpi_id")
+    private Kpi kpi;
 
-    private KPI kpi;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "cycle_id")
+    @JsonIgnore
     private Cycle cycle;
 
+    @Column(name = "average_score", nullable = false, columnDefinition = "double default 0.0")
+    private Double averageScore = 0.0;
 
-    public Rating(Long id, Long submitterId, Long ratedPersonId, Float score, String feedback, KPI kpi, Cycle cycle) {
-        this.id = id;
+    public Rating() {
+    }
+
+    public Rating(Long submitterId, Long ratedPersonId, Float score, String feedback, Kpi kpi, Cycle cycle) {
         this.submitterId = submitterId;
         this.ratedPersonId = ratedPersonId;
         this.score = score;
@@ -54,8 +54,6 @@ public class Rating {
         this.cycle = cycle;
     }
 
-    public Rating() {
-    }
 
     public Long getId() {
         return id;
@@ -97,11 +95,11 @@ public class Rating {
         this.feedback = feedback;
     }
 
-    public KPI getKpi() {
+    public Kpi getKpi() {
         return kpi;
     }
 
-    public void setKpi(KPI kpi) {
+    public void setKpi(Kpi kpi) {
         this.kpi = kpi;
     }
 
@@ -112,4 +110,13 @@ public class Rating {
     public void setCycle(Cycle cycle) {
         this.cycle = cycle;
     }
+
+    public Double getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(Double averageScore) {
+        this.averageScore = averageScore;
+    }
+
 }

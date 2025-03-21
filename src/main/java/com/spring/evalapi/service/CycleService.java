@@ -2,11 +2,9 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.CycleStateException;
-import com.spring.evalapi.entity.KPI;
+import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.entity.Objective;
-import com.spring.evalapi.repository.KPIRepository;
 import com.spring.evalapi.utils.CycleState;
-import com.sun.source.tree.NewArrayTree;
 import org.springframework.transaction.annotation.Transactional;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.repository.CycleRepository;
@@ -21,9 +19,13 @@ public class CycleService {
     private static final Logger logger = LoggerFactory.getLogger(CycleService.class);
 
     private final CycleRepository cycleRepository;
-    public CycleService(CycleRepository cycleRepository) {
+    private final RatingService ratingService;
+
+    public CycleService(CycleRepository cycleRepository, RatingService ratingService) {
         this.cycleRepository = cycleRepository;
+        this.ratingService = ratingService;
     }
+
     @Transactional
     public Cycle addCycle(Cycle cycle) {
         if (cycle == null) {
@@ -37,7 +39,7 @@ public class CycleService {
                 cycle.getKpis()
         );
         if (cycle.getKpis() != null) {
-            for (KPI kpi : cycle.getKpis()) {
+            for (Kpi kpi : cycle.getKpis()) {
                 kpi.setCycle(newCycle);
             }
         }
@@ -53,6 +55,12 @@ public class CycleService {
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null) {
             throw new CycleNotFoundException("No cycle found to open");
+        }
+        if (cycleRepository.findByState(CycleState.OPEN) != null) {
+            throw new CycleStateException("Another cycle is already open");
+        }
+        if (cycle.getState() != CycleState.CREATED) {
+            throw new CycleStateException(String.format("Cycle is  : %s", cycle.getState()));
         }
         cycle.setState(CycleState.OPEN);
         return cycleRepository.save(cycle);
@@ -79,6 +87,7 @@ public class CycleService {
         if (cycle.getState() == CycleState.PASSED)
         {
             cycle.setState(CycleState.CLOSED);
+            ratingService.calculateAndStoreAverage(cycle.getId());
             return cycleRepository.save(cycle);
         }
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.getState()));
@@ -110,12 +119,5 @@ public class CycleService {
        else return "Cycle deleted";
     }
 
-    public String deleteCycleBy(long id){
-        Optional<Cycle> cycle=cycleRepository.findById(id);
-        if(cycle.isEmpty()){
-            throw new CycleNotFoundException(String.format("Cycle with id : %d is not found",id));
-        }
-        else return "Cycle deleted";
-    }
 
 }
