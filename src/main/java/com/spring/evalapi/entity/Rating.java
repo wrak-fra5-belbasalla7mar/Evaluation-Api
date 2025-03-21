@@ -109,12 +109,5 @@ public class Rating {
         this.cycle = cycle;
     }
 
-    public Double getAverageScore() {
-        return averageScore;
-    }
-
-    public void setAverageScore(Double averageScore) {
-        this.averageScore = averageScore;
-    }
 
 }
