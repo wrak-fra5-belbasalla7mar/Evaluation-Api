@@ -39,8 +39,6 @@ public class Rating {
     @JsonIgnore
     private Cycle cycle;
 
-    @Column(name = "average_score", nullable = false, columnDefinition = "double default 0.0")
-    private Double averageScore = 0.0;
 
     public Rating() {
     }
