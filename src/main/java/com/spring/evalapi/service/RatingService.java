@@ -1,6 +1,5 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.KpiNotFoundException;
 import com.spring.evalapi.common.exception.RatingNotFoundException;
 import com.spring.evalapi.entity.Cycle;

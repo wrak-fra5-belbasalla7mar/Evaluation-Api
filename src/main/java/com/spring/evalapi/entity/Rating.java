@@ -40,6 +40,9 @@ public class Rating {
     private Cycle cycle;
 
 
+    @Transient
+    private Double averageScore = 0.0;
+
     public Rating() {
     }
 
@@ -109,5 +112,12 @@ public class Rating {
         this.cycle = cycle;
     }
 
+    public Double getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(Double averageScore) {
+        this.averageScore = averageScore;
+    }
 
 }
