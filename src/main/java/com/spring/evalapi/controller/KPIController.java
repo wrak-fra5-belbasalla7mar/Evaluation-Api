@@ -1,6 +1,5 @@
 package com.spring.evalapi.controller;
 
-
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.service.KPIService;
 import jakarta.validation.Valid;
@@ -22,7 +21,7 @@ public class KPIController {
 
     @PostMapping
     public ResponseEntity<Kpi> addKPI(@Valid @RequestBody Kpi kpi) {
-        Kpi savedKPI = kpiService.addKPI( kpi);
+        Kpi savedKPI = kpiService.addKpi(kpi);
         return new ResponseEntity<>(savedKPI, HttpStatus.CREATED);
     }
 
@@ -37,7 +36,8 @@ public class KPIController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Kpi> updateKPI(@Valid @RequestBody Kpi kpi) {
+    public ResponseEntity<Kpi> updateKPI(@PathVariable Long id, @Valid @RequestBody Kpi kpi) {
+        kpi.setId(id);
         return ResponseEntity.ok(kpiService.updateKPI(kpi));
     }
 
@@ -47,8 +47,16 @@ public class KPIController {
         return ResponseEntity.ok(updatedKPI);
     }
 
+    @PostMapping("/{kpiId}/role/{roleName}/{roleLevel}")
+    public ResponseEntity<Void> assignKpiToRole(@PathVariable Long kpiId, @PathVariable String roleName,
+                                                @PathVariable String roleLevel, @RequestParam Double weight) {
+        kpiService.assignKpiToRole(kpiId, roleName, roleLevel, weight);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteKPI(@PathVariable Long id) {
-        return ResponseEntity.ok(kpiService.deleteKPI(id));
+    public ResponseEntity<Void> deleteKPI(@PathVariable Long id) {
+        kpiService.deleteKPI(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

@@ -26,7 +26,6 @@ public class CycleService {
         this.ratingService = ratingService;
     }
 
-    @Transactional
     public Cycle addCycle(Cycle cycle) {
         if (cycle == null) {
             throw new IllegalArgumentException("Cycle information cannot be null");
@@ -50,7 +49,7 @@ public class CycleService {
         return cycleRepository.findLatestCycle();
     }
 
-    @Transactional
+
     public Cycle openCycle() {
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null) {
@@ -66,7 +65,6 @@ public class CycleService {
         return cycleRepository.save(cycle);
     }
 
-    @Transactional
     public Cycle passCycle() {
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null) throw new CycleNotFoundException("No cycle found to mark as passed");
@@ -78,7 +76,6 @@ public class CycleService {
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.getState()));
     }
 
-    @Transactional
     public Cycle closeCycle() {
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null) {
@@ -93,7 +90,6 @@ public class CycleService {
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.getState()));
     }
 
-    @Transactional
     public Cycle putObjectives(List<Objective> objectives) {
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null) {

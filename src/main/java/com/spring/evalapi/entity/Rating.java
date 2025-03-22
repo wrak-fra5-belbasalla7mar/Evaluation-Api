@@ -26,7 +26,7 @@ public class Rating {
     @NotNull(message = "Score is required")
     @Min(value = 1, message = "Score must be at least 1")
     @Max(value = 5, message = "Score must be at most 5")
-    private Float score;
+    private Double score;
 
     private String feedback;
 
@@ -46,7 +46,7 @@ public class Rating {
     public Rating() {
     }
 
-    public Rating(Long submitterId, Long ratedPersonId, Float score, String feedback, Kpi kpi, Cycle cycle) {
+    public Rating(Long submitterId, Long ratedPersonId, Double score, String feedback, Kpi kpi, Cycle cycle) {
         this.submitterId = submitterId;
         this.ratedPersonId = ratedPersonId;
         this.score = score;
@@ -80,11 +80,11 @@ public class Rating {
         this.ratedPersonId = ratedPersonId;
     }
 
-    public Float getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(Float score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 

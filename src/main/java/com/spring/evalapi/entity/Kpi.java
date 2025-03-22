@@ -22,18 +22,6 @@ public class Kpi {
     @NotNull(message = "Name is required")
     private String name;
 
-    @Column(nullable = false)
-    @NotNull(message = "Role is required")
-    private String role;
-
-    @Column(nullable = false)
-    @NotNull(message = "Level is required")
-    private Integer level;
-
-    @Column(nullable = false)
-    @NotNull(message = "Weight is required")
-    private Double weight;
-
     @ManyToOne
     @JoinColumn(name = "cycle_id")
     @JsonIgnore
@@ -43,13 +31,20 @@ public class Kpi {
     @JsonIgnore
     private List<Rating> ratings;
 
-    public Kpi(String name,String role, Integer level, Double weight, Cycle cycle, List<Rating> ratings) {
+    @ManyToMany
+    @JoinTable(
+            name = "kpi_role",
+            joinColumns = @JoinColumn(name = "kpi_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @JsonIgnore
+    private List<Role>roles;
+
+    public Kpi(String name, Cycle cycle, List<Rating> ratings, List<Role> roles) {
         this.name = name;
-        this.role = role;
-        this.level = level;
-        this.weight = weight;
         this.cycle = cycle;
         this.ratings = ratings;
+        this.roles = roles;
     }
 
     public Kpi() {
@@ -72,30 +67,6 @@ public class Kpi {
         this.name = name;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
     public Cycle getCycle() {
         return cycle;
     }
@@ -111,4 +82,13 @@ public class Kpi {
     public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
     }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
 }

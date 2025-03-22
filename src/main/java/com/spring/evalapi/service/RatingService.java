@@ -9,17 +9,19 @@ import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KpiRepository;
 import com.spring.evalapi.repository.RatingRepository;
 import com.spring.evalapi.utils.CycleState;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RatingService {
 
     @Autowired
@@ -31,24 +33,20 @@ public class RatingService {
     @Autowired
     private CycleRepository cycleRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(CycleService.class);
+    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
 
-    @Transactional
-    public Rating addRating(Rating rating) {
-        if (rating.getKpi() == null) {
-            throw new IllegalArgumentException("KPI is required for a Rating");
-        }
-        Kpi kpi = kpiRepository.findById(rating.getKpi().getId())
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + rating.getKpi().getId() + " not found"));
-
-        log.info("Loaded Kpi: id={}, name={}, description={}, role={}, level={}, weight={}",
-                kpi.getId(), kpi.getName(), kpi.getDescription(), kpi.getRole(), kpi.getLevel(), kpi.getWeight());
+    public Rating addRating(Rating rating) throws IllegalStateException {
         Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
-        if (passedCycle==null) {
+        if (passedCycle == null) {
             throw new IllegalStateException("No cycle in PASSED state found. Ratings can only be added during the PASSED state.");
         }
+
+        Long kpiId = rating.getKpi().getId();
+        Kpi kpi = kpiRepository.findById(kpiId)
+                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
+
         if (kpi.getCycle() == null || !kpi.getCycle().getId().equals(passedCycle.getId())) {
-            throw new IllegalStateException("KPI with ID " + kpi.getId() + " is not associated with the current cycle (ID: " + passedCycle.getId() + ").");
+            throw new IllegalStateException("KPI with ID " + kpiId + " is not associated with the current cycle (ID: " + passedCycle.getId() + ").");
         }
         rating.setKpi(kpi);
         rating.setCycle(passedCycle);
@@ -64,13 +62,10 @@ public class RatingService {
         return ratingRepository.findByKpi_Id(kpiId);
     }
 
-    @Transactional
     public String deleteRating(Long id) {
-        if (!ratingRepository.existsById(id)) {
-            throw new RatingNotFoundException("Rating with ID " + id + " not found");
-        }
-        ratingRepository.deleteById(id);
-        return "Rating Deleted Successfully!";
+        ratingRepository.delete(ratingRepository.findById(id)
+                .orElseThrow(() -> new RatingNotFoundException("Rating with ID " + id + " not found")));
+        return "Rating deleted successfully";
     }
 
     public List<Rating> getRatingsByCycleId(Long cycleId) {
@@ -85,24 +80,29 @@ public class RatingService {
         return ratingRepository.findByCycle_IdAndRatedPersonId(cycleId, ratedPersonId);
     }
 
-    @Transactional
     public void calculateAndStoreAverage(Long cycleId) {
         List<Rating> cycleRatings = ratingRepository.findByCycle_Id(cycleId);
         Map<Long, List<Rating>> ratingsByPerson = cycleRatings.stream()
                 .collect(Collectors.groupingBy(Rating::getRatedPersonId));
+
         for (Map.Entry<Long, List<Rating>> entry : ratingsByPerson.entrySet()) {
+            Long ratedPersonId = entry.getKey();
             List<Rating> personRatings = entry.getValue();
 
-            double weightedSum = 0.0,totalWeight = 0.0,averageScore=0.0;
+            double weightedSum = 0.0, totalWeight = 0.0, averageScore = 0.0;
 
             for (Rating rating : personRatings) {
                 double score = rating.getScore();
-                double weight = rating.getKpi().getWeight();
+                double weight = 1.0;
                 weightedSum += score * weight;
                 totalWeight += weight;
             }
-            if (totalWeight!=0)
-             averageScore= weightedSum / totalWeight;
+
+            if (totalWeight != 0) {
+                averageScore = weightedSum / totalWeight;
+            }
+
+            log.info("Calculated average score for person ID {} in cycle ID {}: {}", ratedPersonId, cycleId, averageScore);
             for (Rating rating : personRatings) {
                 rating.setAverageScore(averageScore);
                 ratingRepository.save(rating);

@@ -31,7 +31,6 @@ public class ObjectiveService {
        return objectiveRepository.findAll();
     }
 
-    @Transactional
     public List<Objective> assignObjective(List<Objective> objectives){
         Cycle cycle = cycleRepository.findLatestCycle();
         if (cycle == null || cycle.getState() != CycleState.OPEN) {
@@ -49,7 +48,6 @@ public class ObjectiveService {
         return objective.get();
     }
 
-    @Transactional
     public String deleteByAssignId(Long id) {
         Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
         if (objective.isEmpty()) {
@@ -59,7 +57,6 @@ public class ObjectiveService {
         return String.format("Objective for user with ID: %d has been successfully deleted", id);
     }
 
-    @Transactional
     public Objective UpdateByAssignId(Long id , Objective updateObjective){
         Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
         if (objective.isEmpty()) {
