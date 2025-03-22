@@ -1,5 +1,6 @@
 package com.spring.evalapi.service;
 
+import com.spring.evalapi.common.exception.FieldIsRequiredException;
 import com.spring.evalapi.entity.KpiRole;
 import com.spring.evalapi.entity.Role;
 import com.spring.evalapi.repository.KpiRoleRepository;
@@ -12,21 +13,25 @@ import java.util.List;
 @Service
 public class RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private KpiRoleRepository kpiRoleRepository;
+    private final KpiRoleRepository kpiRoleRepository;
+
+    public RoleService(RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
+        this.roleRepository = roleRepository;
+        this.kpiRoleRepository = kpiRoleRepository;
+    }
+
 
     public Role addRole(Role role) {
         if (role.getName() == null || role.getName().isEmpty()) {
-            throw new IllegalArgumentException("Role name is required");
+            throw new FieldIsRequiredException("Role name is required");
         }
         if (role.getLevel() == null || role.getLevel().isEmpty()) {
-            throw new IllegalArgumentException("Role level is required");
+            throw new FieldIsRequiredException("Role level is required");
         }
         if (roleRepository.findByNameAndLevel(role.getName(), role.getLevel()).isPresent()) {
-            throw new IllegalArgumentException("Role with name " + role.getName() + " and level " + role.getLevel() + " already exists");
+            throw new FieldIsRequiredException("Role with name " + role.getName() + " and level " + role.getLevel() + " already exists");
         }
         return roleRepository.save(role);
     }

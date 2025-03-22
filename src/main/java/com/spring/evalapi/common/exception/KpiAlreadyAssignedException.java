@@ -6,7 +6,4 @@ public class KpiAlreadyAssignedException extends RuntimeException {
         super(message);
     }
 
-    public KpiAlreadyAssignedException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

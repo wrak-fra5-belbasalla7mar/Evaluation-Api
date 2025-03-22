@@ -2,6 +2,7 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.CycleStateException;
+import com.spring.evalapi.common.exception.FieldIsRequiredException;
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.utils.CycleState;
@@ -17,7 +18,6 @@ import java.util.Optional;
 public class CycleService {
 
     private static final Logger logger = LoggerFactory.getLogger(CycleService.class);
-
     private final CycleRepository cycleRepository;
     private final RatingService ratingService;
 
@@ -25,10 +25,10 @@ public class CycleService {
         this.cycleRepository = cycleRepository;
         this.ratingService = ratingService;
     }
-
+    @Transactional
     public Cycle addCycle(Cycle cycle) {
         if (cycle == null) {
-            throw new IllegalArgumentException("Cycle information cannot be null");
+            throw new FieldIsRequiredException("Cycle information cannot be null");
         }
         Cycle newCycle = new Cycle(
                 cycle.getName(),

@@ -7,7 +7,4 @@ public class ObjectiveNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public ObjectiveNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

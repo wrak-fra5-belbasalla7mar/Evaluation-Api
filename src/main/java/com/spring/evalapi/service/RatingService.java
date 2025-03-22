@@ -1,5 +1,7 @@
 package com.spring.evalapi.service;
 
+import com.spring.evalapi.common.exception.CycleStateException;
+import com.spring.evalapi.common.exception.KpiNotAssociatedException;
 import com.spring.evalapi.common.exception.KpiNotFoundException;
 import com.spring.evalapi.common.exception.RatingNotFoundException;
 import com.spring.evalapi.entity.Cycle;
@@ -33,12 +35,13 @@ public class RatingService {
     @Autowired
     private CycleRepository cycleRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
+//    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
 
+    @Transactional
     public Rating addRating(Rating rating) throws IllegalStateException {
         Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
         if (passedCycle == null) {
-            throw new IllegalStateException("No cycle in PASSED state found. Ratings can only be added during the PASSED state.");
+            throw new CycleStateException("No cycle in PASSED state found. Ratings can only be added during the PASSED state.");
         }
 
         Long kpiId = rating.getKpi().getId();
@@ -46,7 +49,7 @@ public class RatingService {
                 .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
 
         if (kpi.getCycle() == null || !kpi.getCycle().getId().equals(passedCycle.getId())) {
-            throw new IllegalStateException("KPI with ID " + kpiId + " is not associated with the current cycle (ID: " + passedCycle.getId() + ").");
+            throw new KpiNotAssociatedException("KPI with ID " + kpiId + " is not associated with the current cycle (ID: " + passedCycle.getId() + ").");
         }
         rating.setKpi(kpi);
         rating.setCycle(passedCycle);
@@ -80,20 +83,20 @@ public class RatingService {
         return ratingRepository.findByCycle_IdAndRatedPersonId(cycleId, ratedPersonId);
     }
 
+    @Transactional
     public void calculateAndStoreAverage(Long cycleId) {
         List<Rating> cycleRatings = ratingRepository.findByCycle_Id(cycleId);
         Map<Long, List<Rating>> ratingsByPerson = cycleRatings.stream()
                 .collect(Collectors.groupingBy(Rating::getRatedPersonId));
 
         for (Map.Entry<Long, List<Rating>> entry : ratingsByPerson.entrySet()) {
-            Long ratedPersonId = entry.getKey();
             List<Rating> personRatings = entry.getValue();
 
             double weightedSum = 0.0, totalWeight = 0.0, averageScore = 0.0;
 
             for (Rating rating : personRatings) {
                 double score = rating.getScore();
-                double weight = 1.0;
+                double weight = 0.0;
                 weightedSum += score * weight;
                 totalWeight += weight;
             }
@@ -102,7 +105,7 @@ public class RatingService {
                 averageScore = weightedSum / totalWeight;
             }
 
-            log.info("Calculated average score for person ID {} in cycle ID {}: {}", ratedPersonId, cycleId, averageScore);
+//            log.info("Calculated average score for person ID {} in cycle ID {}: {}", ratedPersonId, cycleId, averageScore);
             for (Rating rating : personRatings) {
                 rating.setAverageScore(averageScore);
                 ratingRepository.save(rating);

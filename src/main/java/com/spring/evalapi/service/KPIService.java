@@ -1,7 +1,9 @@
 package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.CycleNotFoundException;
+import com.spring.evalapi.common.exception.FieldIsRequiredException;
 import com.spring.evalapi.common.exception.KpiNotFoundException;
+import com.spring.evalapi.common.exception.RoleNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.entity.KpiRole;
@@ -21,17 +23,21 @@ import java.util.List;
 @Transactional
 public class KPIService {
 
-    @Autowired
-    private KpiRepository kpiRepository;
+    private final KpiRepository kpiRepository;
 
-    @Autowired
-    private CycleRepository cycleRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final CycleRepository cycleRepository;
 
-    @Autowired
-    private KpiRoleRepository kpiRoleRepository;
+    private final RoleRepository roleRepository;
+
+    private final KpiRoleRepository kpiRoleRepository;
+
+    public KPIService(KpiRepository kpiRepository, CycleRepository cycleRepository, RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
+        this.kpiRepository = kpiRepository;
+        this.cycleRepository = cycleRepository;
+        this.roleRepository = roleRepository;
+        this.kpiRoleRepository = kpiRoleRepository;
+    }
 
     public Kpi getKpiById(Long id) {
         return kpiRepository.findById(id)
@@ -42,23 +48,23 @@ public class KPIService {
         return kpiRepository.findByCycle_Id(cycleId);
     }
 
+    @Transactional
     public Kpi addKpi(Kpi kpi) {
         if (kpi.getName() == null || kpi.getName().isEmpty()) {
-            throw new IllegalArgumentException("KPI name is required");
+            throw new FieldIsRequiredException("KPI name is required");
         }
 
         Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
         if (passedCycle == null) {
             throw new IllegalStateException("No cycle in PASSED state found. KPIs can only be added during the PASSED state.");
         }
-
         kpi.setCycle(passedCycle);
         return kpiRepository.save(kpi);
     }
-
+    @Transactional
     public void assignKpiToRole(Long kpiId, String roleName, String roleLevel, Double weight) {
         if (weight == null) {
-            throw new IllegalArgumentException("Weight is required");
+            throw new FieldIsRequiredException("Weight is required");
         }
 
         // Find the KPI
@@ -67,7 +73,7 @@ public class KPIService {
 
         // Find the Role
         Role role = roleRepository.findByNameAndLevel(roleName, roleLevel)
-                .orElseThrow(() -> new IllegalArgumentException("Role with name " + roleName + " and level " + roleLevel + " not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Role with name " + roleName + " and level " + roleLevel + " not found"));
 
         KpiRole existingKpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
                 .orElse(null);
@@ -94,7 +100,7 @@ public class KPIService {
 
         return kpiRepository.save(existingKPI);
     }
-
+    @Transactional
     public Kpi assignKpiToCycle(Long kpiId, Long cycleId) {
         Kpi kpi = kpiRepository.findById(kpiId)
                 .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
