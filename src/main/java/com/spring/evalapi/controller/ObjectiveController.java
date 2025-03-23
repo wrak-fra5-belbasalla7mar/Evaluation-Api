@@ -14,36 +14,33 @@ import java.util.List;
 public class ObjectiveController {
 
     private final ObjectiveService objectiveService;
-
     public ObjectiveController(ObjectiveService objectiveService) {
         this.objectiveService = objectiveService;
     }
-
-    @PostMapping
-    public ResponseEntity<?> assignObjective(@Valid @RequestBody List<Objective> objectives) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(objectiveService.assignObjective(objectives));
+    @PostMapping("")
+    public ResponseEntity<?> assignObjectiveByUserId(@Valid @RequestBody Objective objective){
+        return ResponseEntity.status(HttpStatus.CREATED).body(objectiveService.assignObjectiveByUserId(objective));
     }
 
-    @GetMapping
-    public ResponseEntity<List<Objective>> viewObjectiveForCycle() {
-        return ResponseEntity.status(HttpStatus.OK).body(objectiveService.viewObjectiveForCycle());
-    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Objective> findObjectiveByAssignId(@PathVariable Long id) {
-        Objective objective = objectiveService.findByAssignId(id);
+    public ResponseEntity<List<Objective>> findObjectiveByAssignId(@Valid @PathVariable Long id) {
+        List<Objective> objective = objectiveService.findAllByAssignedUserId(id);
         return ResponseEntity.status(HttpStatus.OK).body(objective);
     }
 
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<Objective> updateObjective(@PathVariable Long id, @Valid @RequestBody Objective updatedObjective) {
+    public ResponseEntity<Objective> updateObjective(@Valid @PathVariable Long id, @Valid @RequestBody Objective updatedObjective) {
         Objective updatedObj = objectiveService.UpdateByAssignId(id,updatedObjective);
         return ResponseEntity.status(HttpStatus.OK).body(updatedObj);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteObjective(@PathVariable Long id) {
-        String responseMessage = objectiveService.deleteByAssignId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+
+    @DeleteMapping("/{assignId}/{objectiveId}")
+    public ResponseEntity<String> deleteByAssignIdAndObjectiveId(@PathVariable Long assignId,@PathVariable Long objectiveId) {
+        String responseMessage = objectiveService.deleteByAssignIdAndObjectiveId(assignId,objectiveId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
     }
 }

@@ -14,9 +14,7 @@ import java.util.List;
 public class RoleService {
 
     private final RoleRepository roleRepository;
-
     private final KpiRoleRepository kpiRoleRepository;
-
     public RoleService(RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
         this.roleRepository = roleRepository;
         this.kpiRoleRepository = kpiRoleRepository;

@@ -1,6 +1,8 @@
 package com.spring.evalapi.service;
+import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.CycleNotOpenException;
 import com.spring.evalapi.common.exception.ObjectiveForUserNotFound;
+import com.spring.evalapi.common.exception.ObjectiveNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.repository.CycleRepository;
@@ -23,58 +25,55 @@ public class ObjectiveService {
         this.cycleRepository = cycleRepository;
     }
 
-    public List<Objective> viewObjectiveForCycle(){
-        Cycle cycle = cycleRepository.findLatestCycle();
-        if (cycle == null || cycle.getState() != CycleState.OPEN) {
-            throw new CycleNotOpenException("No open cycle found! Please ensure an open cycle exists to reach to the objectives");
+
+    @Transactional
+    public Objective assignObjectiveByUserId(Objective objective){
+        Optional<Cycle> cycle =cycleRepository.findById(objective.getCycleId());
+        if(cycle.isEmpty())throw new CycleNotFoundException(String.format("Cycle with id : %d is not found",objective.getCycleId()));
+        if(cycle.get().getState()==CycleState.OPEN) {
+            Objective newObjective = objectiveRepository.save(objective);
         }
-       return objectiveRepository.findAll();
+        else throw new CycleNotOpenException(String.format("Cycle is %s cant add objective to it ",cycle.get().getState()));
+        return objective;
     }
 
-    public List<Objective> assignObjective(List<Objective> objectives){
-        Cycle cycle = cycleRepository.findLatestCycle();
-        if (cycle == null || cycle.getState() != CycleState.OPEN) {
-            throw new CycleNotOpenException("No open cycle found! Please ensure an open cycle exists before assigning objectives.");
-        }
-        objectives.forEach(objective -> objective.setCycle(cycle));
-        return objectiveRepository.saveAll(objectives);
-    }
-
-    public Objective findByAssignId(Long id){
-        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
+    public List<Objective> findAllByAssignedUserId(Long id){
+        List<Objective> objective= objectiveRepository.findAllByAssignedUserId(id);
         if (objective.isEmpty()) {
-            throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
+            throw new ObjectiveForUserNotFound("User with ID: " + id + " is not have objectives");
         }
-        return objective.get();
+        return objective;
     }
 
-    public String deleteByAssignId(Long id) {
-        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
-        if (objective.isEmpty()) {
-            throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
+    @Transactional
+    public String deleteByAssignIdAndObjectiveId(Long userId,Long objectiveId) {
+        Objective objective= objectiveRepository.findByAssignedUserIdAndId(userId,objectiveId);
+        if (objective == null ) {
+            throw new ObjectiveForUserNotFound("Objective  " + objectiveId + " is not found");
         }
-        objectiveRepository.delete(objective.get());
-        return String.format("Objective for user with ID: %d has been successfully deleted", id);
+        objectiveRepository.delete(objective);
+        return String.format("objective with is  : %d  and assignId : %d is deleted", userId,objectiveId);
     }
 
+    @Transactional
     public Objective UpdateByAssignId(Long id , Objective updateObjective){
-        Optional<Objective> objective= objectiveRepository.findByAssignedUserId(id);
-        if (objective.isEmpty()) {
+        Objective objective= objectiveRepository.findByAssignedUserId(id);
+        if (objective == null) {
             throw new ObjectiveForUserNotFound("User with ID: " + id + " is not found");
         }
         if (updateObjective.getTitle() != null) {
-            objective.get().setTitle(updateObjective.getTitle());
+            objective.setTitle(updateObjective.getTitle());
         }
         if (updateObjective.getAssignedUserId() > 0) {
-            objective.get().setAssignedUserId(updateObjective.getAssignedUserId());
+            objective.setAssignedUserId(updateObjective.getAssignedUserId());
         }
         if (updateObjective.getDescription() != null) {
-            objective.get().setDescription(updateObjective.getDescription());
+            objective.setDescription(updateObjective.getDescription());
         }
         if (updateObjective.getDeadline() != null) {
-            objective.get().setDeadline(updateObjective.getDeadline());
+            objective.setDeadline(updateObjective.getDeadline());
         }
-        return objectiveRepository.save(objective.get());
+        return objectiveRepository.save(objective);
     }
 
 }

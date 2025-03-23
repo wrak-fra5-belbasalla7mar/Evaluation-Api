@@ -17,46 +17,51 @@ public class CycleController {
     public CycleController(CycleService cycleService) {
         this.cycleService = cycleService;
     }
-
     @PostMapping("")
     public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle) {
             Cycle savedCycle = cycleService.addCycle(newCycle);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
-
-    @GetMapping("")
+    @GetMapping("/Latest")
     public ResponseEntity<Cycle> getLatestCycle() {
         Cycle latestCycle = cycleService.ViewTheLatestCycle();
         return ResponseEntity.status(HttpStatus.OK).body(latestCycle);
     }
 
-    @PutMapping("/open")
-    public ResponseEntity<Cycle> openCycle() {
-        Cycle cycle = cycleService.openCycle();
+    @GetMapping("/Asc")
+    public ResponseEntity<List<Cycle>> findAllByOrderByStartDateAsc() {
+        List<Cycle> cycles = cycleService.findAllByOrderByStartDateAsc();
+        return ResponseEntity.status(HttpStatus.OK).body(cycles);
+    }
+
+    @GetMapping("/Desc")
+    public ResponseEntity<List<Cycle>> findAllByOrderByStartDateDesc() {
+        List<Cycle> cycles = cycleService.findAllByOrderByStartDateDesc();
+        return ResponseEntity.status(HttpStatus.OK).body(cycles);
+    }
+
+
+    @PutMapping("/pass/{id}")
+    public ResponseEntity<Cycle> passCycle(@Valid @PathVariable Long id) {
+        Cycle cycle = cycleService.passCycle(id);
         return ResponseEntity.ok(cycle);
     }
 
-    @PutMapping("/pass")
-    public ResponseEntity<Cycle> passCycle() {
-        Cycle cycle = cycleService.passCycle();
+    @PutMapping("/close/{id}")
+    public ResponseEntity<Cycle> closeCycle(@Valid @PathVariable Long id) {
+        Cycle cycle = cycleService.closeCycle(id);
         return ResponseEntity.ok(cycle);
     }
-
-    @PutMapping("/close")
-    public ResponseEntity<Cycle> closeCycle() {
-        Cycle cycle = cycleService.closeCycle();
-        return ResponseEntity.ok(cycle);
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Cycle> getCycleByID(@PathVariable("id") long id) {
-        Cycle cycle = cycleService.returnCycleByID(id);
+    public ResponseEntity<Cycle> getCycleByID(@Valid @PathVariable("id") Long id) {
+        Cycle cycle = cycleService.cycleByID(id);
         return ResponseEntity.ok(cycle);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCycleById(@PathVariable ("id") long id){
+    public String deleteCycleById(@Valid @PathVariable ("id") Long id){
         return cycleService.deleteCycleById(id);
     }
+
 
 }

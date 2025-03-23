@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -34,9 +31,14 @@ public class Objective {
     @JoinColumn(name = "cycle_id")
     private Cycle cycle;
 
+
+    @Transient
+    @NotNull(message = "Cycle ID is required")
+    private Long cycleId;
+
     @JsonProperty("cycleId")
     public Long getCycleId() {
-        return cycle != null ? cycle.getId() : null;
+        return cycle != null ? cycle.getId() : cycleId;
     }
 
     @NotNull(message = "Deadline cannot be null")
@@ -81,6 +83,10 @@ public class Objective {
 
     public void setCycle(Cycle cycle) {
         this.cycle = cycle;
+        this.cycleId=cycle.getId();
+    }
+    public void setCycleId(Long cycleId) {
+        this.cycleId = cycleId;
     }
 
     public LocalDate getDeadline() {
@@ -91,12 +97,13 @@ public class Objective {
         this.deadline = deadline;
     }
 
-    public Objective(Long id, Long assignedUserId, String title, String description, Cycle cycle, LocalDate deadline) {
+    public Objective(Long id, Long assignedUserId, String title, String description, Cycle cycle, Long cycleId, LocalDate deadline) {
         this.id = id;
         this.assignedUserId = assignedUserId;
         this.title = title;
         this.description = description;
         this.cycle = cycle;
+        this.cycleId = cycleId;
         this.deadline = deadline;
     }
 

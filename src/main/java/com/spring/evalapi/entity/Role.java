@@ -15,12 +15,8 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
     private String level;
-
-
     @ManyToMany
     @JoinTable(
             name = "kpi_role",
@@ -29,8 +25,6 @@ public class Role {
     )
     @JsonIgnore
     private List<Kpi> kpis;
-
-
 
     public Role() {
     }

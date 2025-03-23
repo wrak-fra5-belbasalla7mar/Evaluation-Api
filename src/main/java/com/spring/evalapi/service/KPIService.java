@@ -1,9 +1,6 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.common.exception.CycleNotFoundException;
-import com.spring.evalapi.common.exception.FieldIsRequiredException;
-import com.spring.evalapi.common.exception.KpiNotFoundException;
-import com.spring.evalapi.common.exception.RoleNotFoundException;
+import com.spring.evalapi.common.exception.*;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.entity.KpiRole;
@@ -24,14 +21,9 @@ import java.util.List;
 public class KPIService {
 
     private final KpiRepository kpiRepository;
-
-
     private final CycleRepository cycleRepository;
-
     private final RoleRepository roleRepository;
-
     private final KpiRoleRepository kpiRoleRepository;
-
     public KPIService(KpiRepository kpiRepository, CycleRepository cycleRepository, RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
         this.kpiRepository = kpiRepository;
         this.cycleRepository = cycleRepository;
@@ -40,38 +32,37 @@ public class KPIService {
     }
 
     public Kpi getKpiById(Long id) {
-        return kpiRepository.findById(id)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
+        return kpiRepository.findById(id).orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
     }
 
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
 
+
     @Transactional
     public Kpi addKpi(Kpi kpi) {
         if (kpi.getName() == null || kpi.getName().isEmpty()) {
             throw new FieldIsRequiredException("KPI name is required");
         }
-
         Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
         if (passedCycle == null) {
-            throw new IllegalStateException("No cycle in PASSED state found. KPIs can only be added during the PASSED state.");
+            throw new CycleStateException("No cycle in PASSED state found. KPIs can only be added during the PASSED state.");
         }
         kpi.setCycle(passedCycle);
         return kpiRepository.save(kpi);
     }
+
+
     @Transactional
     public void assignKpiToRole(Long kpiId, String roleName, String roleLevel, Double weight) {
         if (weight == null) {
             throw new FieldIsRequiredException("Weight is required");
         }
 
-        // Find the KPI
         Kpi kpi = kpiRepository.findById(kpiId)
                 .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
 
-        // Find the Role
         Role role = roleRepository.findByNameAndLevel(roleName, roleLevel)
                 .orElseThrow(() -> new RoleNotFoundException("Role with name " + roleName + " and level " + roleLevel + " not found"));
 
@@ -80,11 +71,9 @@ public class KPIService {
 
         KpiRole kpiRole;
         if (existingKpiRole != null) {
-            // Update the existing weight
             kpiRole = existingKpiRole;
             kpiRole.setWeight(weight);
         } else {
-            // Link the KPI and Role with the weight
             kpiRole = new KpiRole(kpi, role, weight);
         }
         kpiRoleRepository.save(kpiRole);
@@ -100,16 +89,16 @@ public class KPIService {
 
         return kpiRepository.save(existingKPI);
     }
+
+
     @Transactional
     public Kpi assignKpiToCycle(Long kpiId, Long cycleId) {
-        Kpi kpi = kpiRepository.findById(kpiId)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
-        Cycle cycle = cycleRepository.findById(cycleId)
-                .orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
-
+        Kpi kpi = kpiRepository.findById(kpiId).orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
+        Cycle cycle = cycleRepository.findById(cycleId).orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
         kpi.setCycle(cycle);
         return kpiRepository.save(kpi);
     }
+
 
     public void deleteKPI(Long id) {
         Kpi kpi = kpiRepository.findById(id)
