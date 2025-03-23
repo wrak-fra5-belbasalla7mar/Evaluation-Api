@@ -2,6 +2,7 @@ package com.spring.evalapi.entity;
 
 
 import com.fasterxml.jackson.annotation.*;
+import com.spring.evalapi.utils.ObjectiveState;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,9 @@ public class Objective {
     @Id
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private ObjectiveState state;
 
     @NotNull(message = "provide a user id")
     private Long assignedUserId;
@@ -97,14 +101,23 @@ public class Objective {
         this.deadline = deadline;
     }
 
-    public Objective(Long id, Long assignedUserId, String title, String description, Cycle cycle, Long cycleId, LocalDate deadline) {
+    public Objective(Long id, ObjectiveState state, Long assignedUserId, String title, String description, Cycle cycle, Long cycleId, LocalDate deadline) {
         this.id = id;
+        this.state = state;
         this.assignedUserId = assignedUserId;
         this.title = title;
         this.description = description;
         this.cycle = cycle;
         this.cycleId = cycleId;
         this.deadline = deadline;
+    }
+
+    public ObjectiveState getState() {
+        return state;
+    }
+
+    public void setState(ObjectiveState state) {
+        this.state = state;
     }
 
     public Objective() {

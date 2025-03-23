@@ -8,6 +8,7 @@ import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.ObjectiveRepository;
 import com.spring.evalapi.utils.CycleState;
+import com.spring.evalapi.utils.ObjectiveState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +75,28 @@ public class ObjectiveService {
             objective.setDeadline(updateObjective.getDeadline());
         }
         return objectiveRepository.save(objective);
+    }
+
+    @Transactional
+    public void inProgressObjective(Long id){
+       Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
+       if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
+       if(objective.get().getState()== ObjectiveState.PENDING)
+       {
+           objective.get().setState(ObjectiveState.IN_PROGRESS);
+           objectiveRepository.save(objective.get());
+       }
+    }
+
+    @Transactional
+    public void inCompleteObjective(Long id){
+        Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
+        if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
+        if(objective.get().getState()== ObjectiveState.IN_PROGRESS)
+        {
+            objective.get().setState(ObjectiveState.COMPLETED);
+            objectiveRepository.save(objective.get());
+        }
     }
 
 }
