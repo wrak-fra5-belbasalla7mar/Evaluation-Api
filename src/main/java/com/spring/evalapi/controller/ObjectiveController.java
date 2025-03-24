@@ -37,10 +37,21 @@ public class ObjectiveController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedObj);
     }
 
-
     @DeleteMapping("/{assignId}/{objectiveId}")
     public ResponseEntity<String> deleteByAssignIdAndObjectiveId(@PathVariable Long assignId,@PathVariable Long objectiveId) {
         String responseMessage = objectiveService.deleteByAssignIdAndObjectiveId(assignId,objectiveId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
+    }
+
+    @PutMapping("/state/{id}/inProgress")
+    public ResponseEntity<?> inProgressObjective(@PathVariable Long id){
+        Objective responseMessage=  objectiveService.inProgressObjective(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
+    }
+
+    @PutMapping("/state/{id}/complete")
+    public ResponseEntity<?> completeObjective(@PathVariable Long id){
+        Objective responseMessage=  objectiveService.inProgressObjective(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
     }
 }

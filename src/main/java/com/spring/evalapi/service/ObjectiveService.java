@@ -11,7 +11,6 @@ import com.spring.evalapi.utils.CycleState;
 import com.spring.evalapi.utils.ObjectiveState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +27,19 @@ public class ObjectiveService {
 
 
     @Transactional
-    public Objective assignObjectiveByUserId(Objective objective){
-        Optional<Cycle> cycle =cycleRepository.findById(objective.getCycleId());
-        if(cycle.isEmpty())throw new CycleNotFoundException(String.format("Cycle with id : %d is not found",objective.getCycleId()));
-        if(cycle.get().getState()==CycleState.OPEN) {
-            Objective newObjective = objectiveRepository.save(objective);
+    public Objective assignObjectiveByUserId(Objective objective) {
+        Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());
+        if (cycle.isEmpty()) {
+            throw new CycleNotFoundException(
+                    String.format("Cycle with id: %d is not found", objective.getCycleId())
+            );
         }
-        else throw new CycleNotOpenException(String.format("Cycle is %s cant add objective to it ",cycle.get().getState()));
-        return objective;
+        if (cycle.get().getState() == CycleState.OPEN) {
+            objective.setCycle(cycle.get());
+            return objectiveRepository.save(objective);
+        } else {
+            throw new CycleNotOpenException(String.format("Cycle is %s, can't add objective to it", cycle.get().getState()));
+        }
     }
 
     public List<Objective> findAllByAssignedUserId(Long id){
@@ -78,25 +82,29 @@ public class ObjectiveService {
     }
 
     @Transactional
-    public void inProgressObjective(Long id){
+    public Objective inProgressObjective(Long id){
        Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
        if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
        if(objective.get().getState()== ObjectiveState.PENDING)
        {
            objective.get().setState(ObjectiveState.IN_PROGRESS);
            objectiveRepository.save(objective.get());
+           return objective.get();
        }
+       throw new ObjectiveNotFoundException("cant change the state of the objective");
     }
 
     @Transactional
-    public void inCompleteObjective(Long id){
+    public Objective completeObjective(Long id){
         Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
         if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
         if(objective.get().getState()== ObjectiveState.IN_PROGRESS)
         {
             objective.get().setState(ObjectiveState.COMPLETED);
             objectiveRepository.save(objective.get());
+            return objective.get();
         }
+        throw new ObjectiveNotFoundException("cant change the state of the objective");
     }
 
 }
