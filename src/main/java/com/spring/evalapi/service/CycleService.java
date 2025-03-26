@@ -1,12 +1,8 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.common.exception.CycleNotFoundException;
-import com.spring.evalapi.common.exception.CycleStateException;
-import com.spring.evalapi.common.exception.FieldIsRequiredException;
-import com.spring.evalapi.entity.Kpi;
-import com.spring.evalapi.entity.Objective;
+import com.spring.evalapi.common.exception.*;
+import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.utils.CycleState;
-import jakarta.validation.Valid;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import com.spring.evalapi.entity.Cycle;
@@ -22,18 +18,57 @@ import java.util.Optional;
 public class CycleService {
 
     private static final Logger logger = LoggerFactory.getLogger(CycleService.class);
+
     private final CycleRepository cycleRepository;
     private final RatingService ratingService;
+    private final UserService userService;
 
-    public CycleService(CycleRepository cycleRepository, RatingService ratingService) {
+    public CycleService(CycleRepository cycleRepository, RatingService ratingService, UserService userService) {
         this.cycleRepository = cycleRepository;
         this.ratingService = ratingService;
+        this.userService = userService;
     }
 
     @Transactional
-    public Cycle addCycle(Cycle cycle) {
-        if (cycle == null) {
-            throw new FieldIsRequiredException("Cycle information cannot be null");
+    public Cycle updateCycle(Long cycleId, Cycle updatedCycle) {
+        Cycle existingCycle = cycleRepository.findById(cycleId)
+                .orElseThrow(() -> new CycleNotFoundException("Cycle not found with ID: " + cycleId));
+
+        if (updatedCycle.getName() != null) {
+            existingCycle.setName(updatedCycle.getName());
+        }
+        if (updatedCycle.getStartDate() != null) {
+            existingCycle.setStartDate(updatedCycle.getStartDate());
+        }
+        if (updatedCycle.getEndDate() != null) {
+            existingCycle.setEndDate(updatedCycle.getEndDate());
+        }
+        if (updatedCycle.getState() != null) {
+            existingCycle.setState(updatedCycle.getState());
+        }
+        if (updatedCycle.getKpis() != null) {
+            existingCycle.setKpis(updatedCycle.getKpis());
+            updatedCycle.getKpis().forEach(kpi -> kpi.setCycle(existingCycle));
+        }
+        if (updatedCycle.getObjectives() != null) {
+            existingCycle.setObjectives(updatedCycle.getObjectives());
+            updatedCycle.getObjectives().forEach(obj -> obj.setCycle(existingCycle));
+        }
+
+        return cycleRepository.save(existingCycle);
+    }
+
+    @Transactional
+    public Cycle addCycle(Cycle cycle, Long id) {
+        UserDto userDto = userService.getUserById(id);
+        if (userDto == null) {
+            throw new NotFoundException("User not found with id: " + id);
+        }
+        if (!userDto.getRole().equalsIgnoreCase("COMPANY_MANAGER")) {
+            throw new AccessDeniedException("Only company managers can add a cycle");
+        }
+        if (cycle == null || id== null) {
+            throw new FieldIsRequiredException("Cycle information can't be null");
         }
         Cycle newCycle = new Cycle(
                 cycle.getName(),
@@ -42,13 +77,12 @@ public class CycleService {
                 CycleState.OPEN,
                 cycle.getKpis()
         );
-        if (cycle.getKpis() != null) {
-            for (Kpi kpi : cycle.getKpis()) {
-                kpi.setCycle(newCycle);
-            }
+        if (cycle.getKpis() != null && !cycle.getKpis().isEmpty()) {
+            cycle.getKpis().forEach(kpi -> kpi.setCycle(newCycle));
         }
         return cycleRepository.save(newCycle);
     }
+
 
     public Cycle ViewTheLatestCycle() {
         return cycleRepository.findLatestCycle();
@@ -61,6 +95,7 @@ public class CycleService {
     public List<Cycle> findAllByOrderByStartDateAsc(){
         return cycleRepository.findAllByOrderByStartDateAsc();
     }
+
 
     @Transactional
     public Cycle passCycle(Long id) {

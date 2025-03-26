@@ -1,7 +1,9 @@
 package com.spring.evalapi.controller;
+import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.service.CycleService;
+import com.spring.evalapi.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,20 @@ import java.util.List;
 public class CycleController {
 
     private final CycleService cycleService;
-    public CycleController(CycleService cycleService) {
+
+    public CycleController(CycleService cycleService, UserService userService) {
         this.cycleService = cycleService;
     }
+
+    @PutMapping("/{cycleId}")
+    public ResponseEntity<Cycle> updateCycle(@PathVariable Long cycleId, @RequestBody Cycle updatedCycle) {
+        Cycle cycle = cycleService.updateCycle(cycleId, updatedCycle);
+        return ResponseEntity.ok(cycle);
+    }
+
     @PostMapping("")
-    public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle) {
-            Cycle savedCycle = cycleService.addCycle(newCycle);
+    public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle , Long companyManagerID) {
+            Cycle savedCycle = cycleService.addCycle(newCycle , companyManagerID);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
     @GetMapping("/Latest")
@@ -52,6 +62,7 @@ public class CycleController {
         Cycle cycle = cycleService.closeCycle(id);
         return ResponseEntity.ok(cycle);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Cycle> getCycleByID(@Valid @PathVariable("id") Long id) {
         Cycle cycle = cycleService.cycleByID(id);

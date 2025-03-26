@@ -27,7 +27,7 @@ public class ObjectiveService {
 
 
     @Transactional
-    public Objective assignObjectiveByUserId(Objective objective) {
+    public Objective assignObjectiveByUserId(Objective objective ) {
         Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());
         if (cycle.isEmpty()) {
             throw new CycleNotFoundException(
