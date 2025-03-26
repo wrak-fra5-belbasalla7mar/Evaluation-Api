@@ -17,13 +17,13 @@ public class ReportController {
     public ReportController(ReportService reportService) {
         this.reportService = reportService;
     }
-    @GetMapping("/{id}/download-report")
-    public ResponseEntity<byte[]> downloadEvaluationReport(@PathVariable Long id) {
-        byte[] reportData = reportService.generateCycleReport(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=evaluation-report.xlsx");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
-        return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
-    }
+//    @GetMapping("/{id}/download-report")
+//    public ResponseEntity<byte[]> downloadEvaluationReport(@PathVariable Long id) {
+//        byte[] reportData = reportService.generateCycleReport(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=evaluation-report.xlsx");
+//        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//
+//        return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
+//    }
 }
