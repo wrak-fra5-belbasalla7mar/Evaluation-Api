@@ -1,6 +1,6 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.common.exception.NotFoundException;
+import com.spring.evalapi.exception.NotFoundException;
 import com.spring.evalapi.dto.TeamDto;
 import com.spring.evalapi.dto.TeamMemberDto;
 import org.springframework.http.HttpStatus;

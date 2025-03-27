@@ -1,11 +1,10 @@
 package com.spring.evalapi.service;
 
-import com.spring.evalapi.common.exception.FieldIsRequiredException;
+import com.spring.evalapi.exception.FieldIsRequiredException;
 import com.spring.evalapi.entity.KpiRole;
 import com.spring.evalapi.entity.Role;
 import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

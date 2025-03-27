@@ -1,4 +1,4 @@
-package com.spring.evalapi.common.exception;
+package com.spring.evalapi.exception;
 
 public class CycleStateException extends RuntimeException {
     public CycleStateException(String message) {

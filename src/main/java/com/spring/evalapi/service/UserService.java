@@ -1,5 +1,5 @@
 package com.spring.evalapi.service;
-import com.spring.evalapi.common.exception.NotFoundException;
+import com.spring.evalapi.exception.NotFoundException;
 import com.spring.evalapi.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

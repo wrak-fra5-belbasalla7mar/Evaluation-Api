@@ -1,4 +1,4 @@
-package com.spring.evalapi.common.exception;
+package com.spring.evalapi.exception;
 
 public class FieldIsRequiredException extends RuntimeException {
     public FieldIsRequiredException(String message) {

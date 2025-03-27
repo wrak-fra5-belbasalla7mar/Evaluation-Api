@@ -1,4 +1,4 @@
-package com.spring.evalapi.common.exception;
+package com.spring.evalapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -40,41 +40,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(KpiNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleKpiNotFoundException(KpiNotFoundException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "KPI_NOT_FOUND",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", ""),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(RatingNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleRatingNotFoundException(RatingNotFoundException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "RATING_NOT_FOUND",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", ""),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(CycleNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCycleNotFoundException(CycleNotFoundException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "CYCLE_NOT_FOUND",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", ""),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
@@ -145,16 +110,7 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<Object> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false));
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -166,17 +122,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
-
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(NotFoundException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "USER_NOT_FOUND",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", ""),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Not Found");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
-
 }
