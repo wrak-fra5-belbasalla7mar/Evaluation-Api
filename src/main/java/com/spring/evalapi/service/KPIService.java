@@ -1,6 +1,7 @@
 package com.spring.evalapi.service;
 
 import com.spring.evalapi.common.exception.*;
+import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.entity.KpiRole;
@@ -24,15 +25,18 @@ public class KPIService {
     private final CycleRepository cycleRepository;
     private final RoleRepository roleRepository;
     private final KpiRoleRepository kpiRoleRepository;
-    public KPIService(KpiRepository kpiRepository, CycleRepository cycleRepository, RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
+    private final UserService userService;
+
+    public KPIService(KpiRepository kpiRepository, CycleRepository cycleRepository, RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository, UserService userService) {
         this.kpiRepository = kpiRepository;
         this.cycleRepository = cycleRepository;
         this.roleRepository = roleRepository;
         this.kpiRoleRepository = kpiRoleRepository;
+        this.userService = userService;
     }
 
     public Kpi getKpiById(Long id) {
-        return kpiRepository.findById(id).orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
+        return kpiRepository.findById(id).orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
     }
 
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
@@ -41,7 +45,11 @@ public class KPIService {
 
 
     @Transactional
-    public Kpi addKpi(Kpi kpi) {
+    public Kpi addKpi(Kpi kpi,Long id) {
+        UserDto userDto = userService.getUserById(id);
+        if (!userDto.getRole().equalsIgnoreCase("COMPANY_MANAGER")) {
+            throw new AccessDeniedException("Only company managers can add a kpi");
+        }
         if (kpi.getName() == null || kpi.getName().isEmpty()) {
             throw new FieldIsRequiredException("KPI name is required");
         }
@@ -61,10 +69,10 @@ public class KPIService {
         }
 
         Kpi kpi = kpiRepository.findById(kpiId)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
+                .orElseThrow(() -> new NotFoundException("KPI with ID " + kpiId + " not found"));
 
         Role role = roleRepository.findByNameAndLevel(roleName, roleLevel)
-                .orElseThrow(() -> new RoleNotFoundException("Role with name " + roleName + " and level " + roleLevel + " not found"));
+                .orElseThrow(() -> new NotFoundException("Role with name " + roleName + " and level " + roleLevel + " not found"));
 
         KpiRole existingKpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
                 .orElse(null);
@@ -81,7 +89,7 @@ public class KPIService {
 
     public Kpi updateKPI(Kpi kpiDetails) {
         Kpi existingKPI = kpiRepository.findById(kpiDetails.getId())
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
+                .orElseThrow(() -> new NotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
 
         if (kpiDetails.getName() != null && !kpiDetails.getName().isEmpty()) {
             existingKPI.setName(kpiDetails.getName());
@@ -93,8 +101,8 @@ public class KPIService {
 
     @Transactional
     public Kpi assignKpiToCycle(Long kpiId, Long cycleId) {
-        Kpi kpi = kpiRepository.findById(kpiId).orElseThrow(() -> new KpiNotFoundException("KPI with ID " + kpiId + " not found"));
-        Cycle cycle = cycleRepository.findById(cycleId).orElseThrow(() -> new CycleNotFoundException("Cycle with ID " + cycleId + " not found"));
+        Kpi kpi = kpiRepository.findById(kpiId).orElseThrow(() -> new NotFoundException("KPI with ID " + kpiId + " not found"));
+        Cycle cycle = cycleRepository.findById(cycleId).orElseThrow(() -> new NotFoundException("Cycle with ID " + cycleId + " not found"));
         kpi.setCycle(cycle);
         return kpiRepository.save(kpi);
     }
@@ -102,7 +110,7 @@ public class KPIService {
 
     public void deleteKPI(Long id) {
         Kpi kpi = kpiRepository.findById(id)
-                .orElseThrow(() -> new KpiNotFoundException("KPI with ID " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
         kpiRepository.delete(kpi);
     }
 }

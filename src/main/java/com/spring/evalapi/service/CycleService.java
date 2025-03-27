@@ -32,7 +32,7 @@ public class CycleService {
     @Transactional
     public Cycle updateCycle(Long cycleId, Cycle updatedCycle) {
         Cycle existingCycle = cycleRepository.findById(cycleId)
-                .orElseThrow(() -> new CycleNotFoundException("Cycle not found with ID: " + cycleId));
+                .orElseThrow(() -> new NotFoundException("Cycle not found with ID: " + cycleId));
 
         if (updatedCycle.getName() != null) {
             existingCycle.setName(updatedCycle.getName());
@@ -100,7 +100,7 @@ public class CycleService {
     @Transactional
     public Cycle passCycle(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
-        if (cycle.isEmpty()) throw new CycleNotFoundException("No cycle found to mark as passed");
+        if (cycle.isEmpty()) throw new NotFoundException("No cycle found to mark as passed");
         if (cycle.get().getState() == CycleState.OPEN)
         {
             cycle.get().setState(CycleState.PASSED);
@@ -113,7 +113,7 @@ public class CycleService {
     public Cycle closeCycle(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
         if (cycle.isEmpty()) {
-            throw new CycleNotFoundException("No cycle found to close");
+            throw new NotFoundException("No cycle found to close");
         }
         if (cycle.get().getState() == CycleState.PASSED)
         {
@@ -127,7 +127,7 @@ public class CycleService {
     public Cycle cycleByID(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
         if (cycle.isEmpty()) {
-            throw new CycleNotFoundException(String.format("Cycle with ID %d not found", id));
+            throw new NotFoundException(String.format("Cycle with ID %d not found", id));
         }
         return cycle.get();
     }
@@ -137,7 +137,7 @@ public class CycleService {
     public String deleteCycleById(Long id){
        Optional<Cycle> cycle=cycleRepository.findById(id);
        if(cycle.isEmpty()){
-           throw new CycleNotFoundException(String.format("Cycle with id : %d is not found",id));
+           throw new NotFoundException(String.format("Cycle with id : %d is not found",id));
        }
        cycleRepository.deleteById(id);
        return "Cycle deleted";

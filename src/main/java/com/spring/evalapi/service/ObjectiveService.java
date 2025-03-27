@@ -1,8 +1,7 @@
 package com.spring.evalapi.service;
-import com.spring.evalapi.common.exception.CycleNotFoundException;
 import com.spring.evalapi.common.exception.CycleNotOpenException;
+import com.spring.evalapi.common.exception.NotFoundException;
 import com.spring.evalapi.common.exception.ObjectiveForUserNotFound;
-import com.spring.evalapi.common.exception.ObjectiveNotFoundException;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.repository.CycleRepository;
@@ -30,7 +29,7 @@ public class ObjectiveService {
     public Objective assignObjectiveByUserId(Objective objective ) {
         Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());
         if (cycle.isEmpty()) {
-            throw new CycleNotFoundException(
+            throw new NotFoundException(
                     String.format("Cycle with id: %d is not found", objective.getCycleId())
             );
         }
@@ -84,27 +83,27 @@ public class ObjectiveService {
     @Transactional
     public Objective inProgressObjective(Long id){
        Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
-       if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
+       if (objective.isEmpty())throw new NotFoundException(String.format("objective with id : %d not found",id));
        if(objective.get().getState()== ObjectiveState.PENDING)
        {
            objective.get().setState(ObjectiveState.IN_PROGRESS);
            objectiveRepository.save(objective.get());
            return objective.get();
        }
-       throw new ObjectiveNotFoundException("cant change the state of the objective");
+       throw new NotFoundException("cant change the state of the objective");
     }
 
     @Transactional
     public Objective completeObjective(Long id){
         Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
-        if (objective.isEmpty())throw new ObjectiveNotFoundException(String.format("objective with id : %d not found",id));
+        if (objective.isEmpty())throw new NotFoundException(String.format("objective with id : %d not found",id));
         if(objective.get().getState()== ObjectiveState.IN_PROGRESS)
         {
             objective.get().setState(ObjectiveState.COMPLETED);
             objectiveRepository.save(objective.get());
             return objective.get();
         }
-        throw new ObjectiveNotFoundException("cant change the state of the objective");
+        throw new NotFoundException("cant change the state of the objective");
     }
 
 }

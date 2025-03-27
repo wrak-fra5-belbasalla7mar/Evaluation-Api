@@ -6,7 +6,6 @@ import com.spring.evalapi.utils.ObjectiveState;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.time.LocalDate;
 

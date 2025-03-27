@@ -19,9 +19,9 @@ public class KPIController {
         this.kpiService = kpiService;
     }
 
-    @PostMapping
-    public ResponseEntity<Kpi> addKPI(@Valid @RequestBody Kpi kpi) {
-        Kpi savedKPI = kpiService.addKpi(kpi);
+    @PostMapping("/{userId}")
+    public ResponseEntity<Kpi> addKPI(@Valid @RequestBody Kpi kpi,@PathVariable  Long userId) {
+        Kpi savedKPI = kpiService.addKpi(kpi,userId);
         return new ResponseEntity<>(savedKPI, HttpStatus.CREATED);
     }
 
