@@ -13,7 +13,6 @@ import com.spring.evalapi.repository.CycleRepository;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +42,9 @@ public class CycleService {
         if (updatedCycle.getStartDate() != null) {
             existingCycle.setStartDate(updatedCycle.getStartDate());
         }
+        if (updatedCycle.getCompanyManagerId() != null) {
+            existingCycle.setCompanyManagerId(updatedCycle.getCompanyManagerId());
+        }
         if (updatedCycle.getEndDate() != null) {
             existingCycle.setEndDate(updatedCycle.getEndDate());
         }
@@ -62,23 +64,32 @@ public class CycleService {
     }
 
     @Transactional
-    public Cycle addCycle(Cycle cycle, Long id) {
-        UserDto userDto = userService.getUserById(id);
-        if (userDto == null) {
-            throw new NotFoundException("User not found with id: " + id);
-        }
-        if (!userDto.getRole().equalsIgnoreCase("COMPANY_MANAGER")) {
+    public Cycle addCycle(Cycle cycle) {
+        Cycle findOpenCycle=cycleRepository.findByState(CycleState.OPEN);
+        Cycle findPassCycle =cycleRepository.findByState(CycleState.PASSED);
+
+        if (findOpenCycle !=null ||findPassCycle!=null)
+            throw new IllegalStateException("Only One open cycle  be can add a cycle");
+
+        UserDto userDto = userService.getUserById(cycle.getCompanyManagerId());
+        logger.info("Attempting to add a cycle for user with ID: {}",userDto.toString());
+
+        if (!userDto.getRole().equals("CompanyManager")&& !userDto.getId().equals(userDto.getManagerId())) {
             throw new AccessDeniedException("Only company managers can add a cycle");
         }
-        if (cycle == null || id== null) {
+        if (cycle.getCompanyManagerId()== null) {
             throw new FieldIsRequiredException("Cycle information can't be null");
         }
+        if(cycle.getState().equals(CycleState.OPEN))
+            throw new IllegalStateException("cycle state must be open");
+
         Cycle newCycle = new Cycle(
                 cycle.getName(),
                 cycle.getStartDate(),
                 cycle.getEndDate(),
                 CycleState.OPEN,
-                cycle.getKpis()
+                cycle.getKpis(),
+                cycle.getCompanyManagerId()
         );
         if (cycle.getKpis() != null && !cycle.getKpis().isEmpty()) {
             cycle.getKpis().forEach(kpi -> kpi.setCycle(newCycle));

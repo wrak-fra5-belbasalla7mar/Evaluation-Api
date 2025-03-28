@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class UserService {
-    private final WebClient webClient = WebClient.create("http://localhost:8080/manager");
+    private final WebClient webClient = WebClient.create("http://localhost:8080/employee");
     public UserDto getUserById(Long id) {
         UserDto user = webClient.get()
                 .uri("/find?id=" + id)

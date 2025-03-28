@@ -20,6 +20,8 @@ public class Cycle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
 
+    private Long companyManagerId;
+
     @NotBlank(message = "Cycle name is required")
     private  String name;
 
@@ -50,12 +52,13 @@ public class Cycle {
         objective.setCycle(this);
     }
 
-    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis) {
+    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis, Long companyManagerId) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.state = state;
         this.kpis = kpis;
+        this.companyManagerId = companyManagerId;
     }
 
     public Long getId() {
@@ -125,5 +128,13 @@ public class Cycle {
     }
 
     public Cycle() {
+    }
+
+    public Long getCompanyManagerId() {
+        return companyManagerId;
+    }
+
+    public void setCompanyManagerId(Long companyManagerId) {
+        this.companyManagerId = companyManagerId;
     }
 }

@@ -1,9 +1,6 @@
 package com.spring.evalapi.controller;
-import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.entity.Cycle;
-import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.service.CycleService;
-import com.spring.evalapi.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,7 @@ public class CycleController {
 
     private final CycleService cycleService;
 
-    public CycleController(CycleService cycleService, UserService userService) {
+    public CycleController(CycleService cycleService) {
         this.cycleService = cycleService;
     }
 
@@ -28,8 +25,8 @@ public class CycleController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle , Long companyManagerID) {
-            Cycle savedCycle = cycleService.addCycle(newCycle , companyManagerID);
+    public ResponseEntity<?> createCycle(@Valid @RequestBody Cycle newCycle) {
+            Cycle savedCycle = cycleService.addCycle(newCycle );
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
     @GetMapping("/Latest")
