@@ -30,7 +30,6 @@ public class ObjectiveController {
     }
 
 
-
     @PutMapping("/{id}")
     public ResponseEntity<Objective> updateObjective(@Valid @PathVariable Long id, @Valid @RequestBody Objective updatedObjective) {
         Objective updatedObj = objectiveService.UpdateByAssignId(id,updatedObjective);
@@ -51,7 +50,10 @@ public class ObjectiveController {
 
     @PutMapping("/state/{id}/complete")
     public ResponseEntity<?> completeObjective(@PathVariable Long id){
-        Objective responseMessage=  objectiveService.inProgressObjective(id);
+        Objective responseMessage=  objectiveService.completeObjective(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
     }
+
+
+
 }

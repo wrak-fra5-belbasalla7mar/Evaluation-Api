@@ -23,8 +23,16 @@ public class Objective {
     @NotNull(message = "provide a user id")
     private Long assignedUserId;
 
+    @NotNull(message = "provide a manager id")
+    private Long managerId;
+
     @NotBlank(message = "objective name is required")
     private String title;
+
+    @NotNull(message = "provide team id")
+    private Long TeamId;
+
+
 
     @NotBlank(message = "description name is required")
     private String description;
@@ -120,5 +128,21 @@ public class Objective {
     }
 
     public Objective() {
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
+    }
+
+    public Long getTeamId() {
+        return TeamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        TeamId = teamId;
     }
 }

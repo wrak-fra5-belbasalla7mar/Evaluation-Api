@@ -9,5 +9,6 @@ import java.util.List;
 public class TeamDto {
     private Long id;
     private Long managerId;
+    private String name;
     private List<TeamMemberDto> members;
 }

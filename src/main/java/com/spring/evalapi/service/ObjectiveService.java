@@ -1,4 +1,6 @@
 package com.spring.evalapi.service;
+import com.spring.evalapi.dto.TeamDto;
+import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.exception.CycleNotOpenException;
 import com.spring.evalapi.exception.NotFoundException;
 import com.spring.evalapi.exception.ObjectiveForUserNotFound;
@@ -10,6 +12,7 @@ import com.spring.evalapi.utils.CycleState;
 import com.spring.evalapi.utils.ObjectiveState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,23 +21,37 @@ public class ObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
     private final CycleRepository cycleRepository;
+    private final TeamService teamService;
+    private final  UserService userService;
 
-    public ObjectiveService( ObjectiveRepository objectiveRepository1, CycleRepository cycleRepository) {
+    public ObjectiveService(ObjectiveRepository objectiveRepository1, CycleRepository cycleRepository, TeamService teamService, UserService userService) {
         this.objectiveRepository = objectiveRepository1;
         this.cycleRepository = cycleRepository;
+        this.teamService = teamService;
+        this.userService = userService;
     }
 
 
     @Transactional
     public Objective assignObjectiveByUserId(Objective objective ) {
+
+        UserDto user=userService.getUserById(objective.getAssignedUserId());
+        if(user==null)throw new RuntimeException("user not found ID "+objective.getAssignedUserId());
+
+        TeamDto team=teamService.getTeamByUserId(objective.getAssignedUserId());
+
+        if(team ==null)throw new RuntimeException("Team for User ID not found "+objective.getAssignedUserId());
         Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());
         if (cycle.isEmpty()) {
             throw new NotFoundException(
                     String.format("Cycle with id: %d is not found", objective.getCycleId())
             );
         }
+
         if (cycle.get().getState() == CycleState.OPEN) {
             objective.setCycle(cycle.get());
+            objective.setManagerId(team.getManagerId());
+            objective.setTeamId(team.getId());
             return objectiveRepository.save(objective);
         } else {
             throw new CycleNotOpenException(String.format("Cycle is %s, can't add objective to it", cycle.get().getState()));
