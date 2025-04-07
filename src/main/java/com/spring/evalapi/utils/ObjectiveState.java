@@ -2,5 +2,6 @@ package com.spring.evalapi.utils;
 
 public enum ObjectiveState {
    OPEN,
-    COMPLETED
+    COMPLETED,
+    IN_PROGRESS,
 }
