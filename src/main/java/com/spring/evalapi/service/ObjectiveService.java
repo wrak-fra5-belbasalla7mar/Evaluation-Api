@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -38,9 +39,11 @@ public class ObjectiveService {
         UserDto user=userService.getUserById(objective.getAssignedUserId());
         if(user==null)throw new RuntimeException("user not found ID "+objective.getAssignedUserId());
 
-        TeamDto team=teamService.getTeamByUserId(objective.getAssignedUserId());
+        TeamDto team=teamService.getTeamId(objective.getTeamId());
 
-        if(team ==null)throw new RuntimeException("Team for User ID not found "+objective.getAssignedUserId());
+        if(team ==null )throw new RuntimeException("Team for User ID not found "+objective.getAssignedUserId());
+        if(!Objects.equals(team.getManagerId(), objective.getManagerId()))throw new RuntimeException("can,t add objective by this user "+objective.getManagerId());
+
         Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());
         if (cycle.isEmpty()) {
             throw new NotFoundException(
@@ -97,28 +100,17 @@ public class ObjectiveService {
         return objectiveRepository.save(objective);
     }
 
-    @Transactional
-    public Objective inProgressObjective(Long id){
-       Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
-       if (objective.isEmpty())throw new NotFoundException(String.format("objective with id : %d not found",id));
-       if(objective.get().getState()== ObjectiveState.PENDING)
-       {
-           objective.get().setState(ObjectiveState.IN_PROGRESS);
-           objectiveRepository.save(objective.get());
-           return objective.get();
-       }
-       throw new NotFoundException("cant change the state of the objective");
-    }
+
 
     @Transactional
     public Objective completeObjective(Long id){
-        Optional<Objective> objective= objectiveRepository.findById(Math.toIntExact(id));
-        if (objective.isEmpty())throw new NotFoundException(String.format("objective with id : %d not found",id));
-        if(objective.get().getState()== ObjectiveState.IN_PROGRESS)
+        Objective objective= objectiveRepository.findById(id);
+        if (objective == null)throw new NotFoundException(String.format("objective with id : %d not found",id));
+        if(objective.getState()== ObjectiveState.OPEN)
         {
-            objective.get().setState(ObjectiveState.COMPLETED);
-            objectiveRepository.save(objective.get());
-            return objective.get();
+            objective.setState(ObjectiveState.COMPLETED);
+            objectiveRepository.save(objective);
+            return objective;
         }
         throw new NotFoundException("cant change the state of the objective");
     }

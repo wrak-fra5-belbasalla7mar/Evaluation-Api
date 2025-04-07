@@ -19,26 +19,10 @@ public class TeamService {
 
     private final WebClient webClient = WebClient.create("http://localhost:8082/teams");
 
-    public TeamDto getTeamById(Long id){
-        TeamDto teamDto = webClient.get()
-                .uri("/?id=" + id)
-                .retrieve()
-                .onStatus(HttpStatus.NOT_FOUND::equals, response ->
-                        response.createException().flatMap(error ->
-                                Mono.error(new NotFoundException("Team not found with id: " + id))
-                        )
-                )
-                .bodyToMono(TeamDto.class)
-                .block();
-        if (teamDto == null) {
-            throw new NotFoundException("Team not found with id: " + id);
-        }
-        return teamDto;
-    }
 
     public TeamDto getTeamByUserId(Long userId) {
         TeamDto[] allTeams = webClient.get()
-                .uri("")
+                .uri("teams/by-manager/"+userId)
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals, response ->
                         Mono.error(new NotFoundException("No teams found"))
@@ -59,32 +43,18 @@ public class TeamService {
         throw new NotFoundException("No team found for user with ID: " + userId);
     }
 
-
-    //for team manager
-    public List<TeamDto> getTeamsByUserId(Long userId) {
-        TeamDto[] allTeams = webClient.get()
-                .uri("")
+    public TeamDto getTeamId(Long id) {
+        TeamDto team= webClient.get()
+                .uri("/"+id)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, response ->
+                .onStatus(HttpStatus.NOT_FOUND::equals, response ->
                         Mono.error(new NotFoundException("No teams found"))
                 )
-                .bodyToMono(TeamDto[].class)
+                .bodyToMono(TeamDto.class)
                 .block();
-
-        if (allTeams == null || allTeams.length == 0) {
-            throw new NotFoundException("No teams found for this user");
-        }
-
-        List<TeamDto> userTeams = Arrays.stream(allTeams)
-                .filter(team -> team.getMembers().stream()
-                        .anyMatch(member -> member.getUserId().equals(userId)))
-                .collect(Collectors.toList());
-
-        if (userTeams.isEmpty()) {
-            throw new NotFoundException("No team found for user with ID: " + userId);
-        }
-
-        return userTeams;
+        return team;
     }
+
+
 
 }

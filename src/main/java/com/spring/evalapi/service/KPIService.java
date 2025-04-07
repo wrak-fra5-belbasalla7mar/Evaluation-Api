@@ -49,7 +49,7 @@ public class KPIService {
     @Transactional
     public Kpi addKpi(Kpi kpi,Long id) {
         UserDto userDto = userService.getUserById(id);
-        if (!userDto.getRole().equalsIgnoreCase("COMPANY_MANAGER")) {
+        if (!userDto.getRole().equals("CompanyManager")) {
             throw new AccessDeniedException("Only company managers can add a kpi");
         }
         if (kpi.getName() == null || kpi.getName().isEmpty()) {

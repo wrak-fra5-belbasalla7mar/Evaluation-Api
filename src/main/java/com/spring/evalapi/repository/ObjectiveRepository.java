@@ -13,4 +13,5 @@ public interface ObjectiveRepository extends JpaRepository<Objective,Integer> {
     List<Objective> findAllByAssignedUserId(Long assignedUserId);
     Objective findByAssignedUserIdAndId(Long assignedUserId, Long id);
     Objective findByAssignedUserId(Long assignedUserId);
+    Objective findById(Long id);
 }
