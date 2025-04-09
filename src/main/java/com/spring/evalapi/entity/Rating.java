@@ -40,6 +40,7 @@ public class Rating {
 
 
     @Transient
+    @JsonIgnore
     private Double averageScore = 0.0;
 
     public Rating() {

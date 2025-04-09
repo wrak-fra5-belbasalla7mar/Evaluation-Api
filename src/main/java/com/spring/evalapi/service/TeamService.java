@@ -20,27 +20,15 @@ public class TeamService {
     private final WebClient webClient = WebClient.create("http://localhost:8082/teams");
 
 
-    public TeamDto getTeamByUserId(Long userId) {
-        TeamDto[] allTeams = webClient.get()
-                .uri("teams/by-manager/"+userId)
+    public TeamDto getTeamByMemberId(Long memberId) {
+        TeamDto team = webClient.get()
+                .uri("/team-members?memberId=" + memberId)
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals, response ->
-                        Mono.error(new NotFoundException("No teams found"))
-                )
-                .bodyToMono(TeamDto[].class)
+                        Mono.error(new NotFoundException("No teams found for memberId: " + memberId)))
+                .bodyToMono(TeamDto.class)
                 .block();
-
-        if (allTeams == null || allTeams.length == 0) {
-            throw new NotFoundException("No teams found for this user ");
-        }
-
-        for (TeamDto team : allTeams) {
-            for (TeamMemberDto member : team.getMembers()) {
-                if (member.getUserId().equals(userId)) {
-                    return team;         }
-            }
-        }
-        throw new NotFoundException("No team found for user with ID: " + userId);
+        return team;
     }
 
     public TeamDto getTeamId(Long id) {

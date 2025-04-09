@@ -1,5 +1,6 @@
 package com.spring.evalapi.service;
 
+import com.spring.evalapi.dto.UserDto;
 import com.spring.evalapi.exception.CycleStateException;
 import com.spring.evalapi.exception.KpiNotAssociatedException;
 import com.spring.evalapi.exception.NotFoundException;
@@ -48,10 +49,12 @@ public class RatingService {
             throw new CycleStateException("No cycle in PASSED state found. Ratings can only be added during the PASSED state.");
         }
 
-        userService.getUserById(rating.getSubmitterId());
-        userService.getUserById(rating.getRatedPersonId());
-        TeamDto submitterTeam = teamService.getTeamByUserId(rating.getSubmitterId());
-        TeamDto ratedPersonTeam = teamService.getTeamByUserId(rating.getRatedPersonId());
+        UserDto submitterPerson=userService.getUserById(rating.getSubmitterId());
+        UserDto ratedPerson=  userService.getUserById(rating.getRatedPersonId());
+        TeamDto submitterTeam = teamService.getTeamByMemberId(submitterPerson.getId());
+        TeamDto ratedPersonTeam = teamService.getTeamByMemberId(ratedPerson.getId());
+//        System.out.println("Submitter Team ID: " + submitterTeam.getId());
+//        System.out.println("Rated Person Team ID: " + ratedPersonTeam.getId());
         if (!submitterTeam.getId().equals(ratedPersonTeam.getId())) {
             throw new NotFoundException("Submitter (ID: " + rating.getSubmitterId() + ") and Rated Person (ID: " + rating.getRatedPersonId() + ") are not in the same team.");
         }

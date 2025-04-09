@@ -49,6 +49,4 @@ public class ObjectiveController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseMessage);
     }
 
-
-
 }
