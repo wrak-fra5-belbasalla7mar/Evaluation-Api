@@ -19,7 +19,7 @@ public class KpiRole {
     private Role role;
 
     @Column(nullable = false)
-    private Double weight;
+    private double weight=1.0;
 
     public KpiRole() {
     }
@@ -54,11 +54,11 @@ public class KpiRole {
         this.role = role;
     }
 
-    public Double getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 }

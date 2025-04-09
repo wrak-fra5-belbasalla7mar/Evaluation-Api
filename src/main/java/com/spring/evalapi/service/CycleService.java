@@ -132,7 +132,7 @@ public class CycleService {
         if (cycle.get().getState() == CycleState.PASSED)
         {
             cycle.get().setState(CycleState.CLOSED);
-            ratingService.calculateAndStoreAverage(cycle.get().getId());
+            ratingService.calculateAverageScores(cycle.get().getId());
             return cycleRepository.save(cycle.get());
         }
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.get().getState()));

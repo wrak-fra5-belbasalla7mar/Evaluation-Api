@@ -44,7 +44,11 @@ public class KPIService {
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
-
+    public double getWeightByKpiIdAndRoleNameAndRoleLevel(Long kpiId, String roleName, String roleLevel) {
+        KpiRole kpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
+                .orElse(null);
+        return kpiRole != null ? kpiRole.getWeight() : 1.0;
+    }
 
     @Transactional
     public Kpi addKpi(Kpi kpi,Long id) {
@@ -99,6 +103,7 @@ public class KPIService {
 
         return kpiRepository.save(existingKPI);
     }
+
 
 
     @Transactional

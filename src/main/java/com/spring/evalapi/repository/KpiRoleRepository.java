@@ -12,6 +12,4 @@ public interface KpiRoleRepository extends JpaRepository<KpiRole, Long> {
     Optional<KpiRole> findByKpi_IdAndRole_NameAndRole_Level(Long kpiId, String roleName, String roleLevel);
 
     List<KpiRole> findByRole_NameAndRole_Level(String roleName, String roleLevel);
-
-    List<KpiRole> findByKpi_Id(Long kpiId);
 }

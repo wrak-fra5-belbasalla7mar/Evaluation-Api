@@ -15,6 +15,7 @@ import com.spring.evalapi.utils.CycleState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,15 +32,16 @@ public class RatingService {
     private final UserService userService;
 
     private final TeamService teamService;
+    private final KPIService kpiService;
 
-    public RatingService(RatingRepository ratingRepository, KpiRepository kpiRepository, CycleRepository cycleRepository, UserService userService, TeamService teamService) {
+    public RatingService(RatingRepository ratingRepository, KpiRepository kpiRepository, CycleRepository cycleRepository, UserService userService, TeamService teamService, KPIService kpiService) {
         this.ratingRepository = ratingRepository;
         this.kpiRepository = kpiRepository;
         this.cycleRepository = cycleRepository;
         this.userService = userService;
         this.teamService = teamService;
+        this.kpiService = kpiService;
     }
-
 
     //    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
     @Transactional
@@ -49,8 +51,8 @@ public class RatingService {
             throw new CycleStateException("No cycle in PASSED state found. Ratings can only be added during the PASSED state.");
         }
 
-        UserDto submitterPerson=userService.getUserById(rating.getSubmitterId());
-        UserDto ratedPerson=  userService.getUserById(rating.getRatedPersonId());
+        UserDto submitterPerson = userService.getUserById(rating.getSubmitterId());
+        UserDto ratedPerson = userService.getUserById(rating.getRatedPersonId());
         TeamDto submitterTeam = teamService.getTeamByMemberId(submitterPerson.getId());
         TeamDto ratedPersonTeam = teamService.getTeamByMemberId(ratedPerson.getId());
 //        System.out.println("Submitter Team ID: " + submitterTeam.getId());
@@ -72,6 +74,7 @@ public class RatingService {
         rating.setCycle(passedCycle);
         return ratingRepository.save(rating);
     }
+
     public Rating getRatingById(Long id) {
         return ratingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Rating with ID " + id + " not found"));
@@ -99,33 +102,39 @@ public class RatingService {
         return ratingRepository.findByCycle_IdAndRatedPersonId(cycleId, ratedPersonId);
     }
 
-    @Transactional
-    public void calculateAndStoreAverage(Long cycleId) {
+    @Transactional(readOnly = true)
+    public Map<Long, Double> calculateAverageScores(Long cycleId) {
         List<Rating> cycleRatings = ratingRepository.findByCycle_Id(cycleId);
         Map<Long, List<Rating>> ratingsByPerson = cycleRatings.stream()
                 .collect(Collectors.groupingBy(Rating::getRatedPersonId));
 
+        Map<Long, Double> averageScores = new HashMap<>();
+
         for (Map.Entry<Long, List<Rating>> entry : ratingsByPerson.entrySet()) {
+            Long ratedPersonId = entry.getKey();
             List<Rating> personRatings = entry.getValue();
 
-            double weightedSum = 0.0, totalWeight = 0.0, averageScore = 0.0;
+            double weightedSum = 0.0,totalWeight = 0.0;
+            UserDto user = userService.getUserById(ratedPersonId);
+            String roleName = user.getRole();
+            String roleLevel = user.getLevel().name();
 
             for (Rating rating : personRatings) {
                 double score = rating.getScore();
-                double weight = 0.0;
+                Kpi kpi = rating.getKpi();
+
+                Double weight = kpiService.getWeightByKpiIdAndRoleNameAndRoleLevel(kpi.getId(), roleName, roleLevel);
+
                 weightedSum += score * weight;
                 totalWeight += weight;
             }
 
-            if (totalWeight != 0) {
-                averageScore = weightedSum / totalWeight;
-            }
+            double averageScore = (totalWeight > 0) ? weightedSum / totalWeight : 0.0;
+            averageScores.put(ratedPersonId, averageScore);
 
-//            log.info("Calculated average score for person ID {} in cycle ID {}: {}", ratedPersonId, cycleId, averageScore);
-            for (Rating rating : personRatings) {
-                rating.setAverageScore(averageScore);
-                ratingRepository.save(rating);
-            }
+            // log.info("Calculated average score for person ID {} in cycle ID {}: {}", ratedPersonId, cycleId, averageScore);
         }
+
+        return averageScores;
     }
 }
