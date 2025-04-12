@@ -26,6 +26,12 @@ public class RoleController {
         return new ResponseEntity<>(savedRole, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Role>> getAllRoles() {
+        List<Role> roles = roleService.getAllRoles();
+        return ResponseEntity.ok(roles);
+    }
+
     @GetMapping("/{name}/{level}")
     public ResponseEntity<Role> getRoleByNameAndLevel(@PathVariable String name, @PathVariable String level) {
         Role role = roleService.getRoleByNameAndLevel(name, level);

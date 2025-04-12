@@ -20,6 +20,10 @@ public class RoleService {
     }
 
 
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
     public Role addRole(Role role) {
         if (role.getName() == null || role.getName().isEmpty()) {
             throw new FieldIsRequiredException("Role name is required");
