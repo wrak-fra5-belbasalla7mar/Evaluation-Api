@@ -35,6 +35,11 @@ public class KPIController {
         return ResponseEntity.ok(kpiService.getKPIsByCycleId(cycleId));
     }
 
+    @GetMapping
+    public ResponseEntity<List<Kpi>> getAllKPIs() {
+        return ResponseEntity.ok(kpiService.getAllKpis());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Kpi> updateKPI(@PathVariable Long id, @Valid @RequestBody Kpi kpi) {
         kpi.setId(id);

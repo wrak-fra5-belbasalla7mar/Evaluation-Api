@@ -68,6 +68,4 @@ public class CycleController {
     public String deleteCycleById(@Valid @PathVariable ("id") Long id){
         return cycleService.deleteCycleById(id);
     }
-
-
 }

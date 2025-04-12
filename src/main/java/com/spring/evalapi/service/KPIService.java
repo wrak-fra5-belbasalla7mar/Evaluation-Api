@@ -50,6 +50,10 @@ public class KPIService {
         return kpiRole != null ? kpiRole.getWeight() : 1.0;
     }
 
+    public List<Kpi> getAllKpis( ) {
+        return kpiRepository.findAll();
+    }
+
     @Transactional
     public Kpi addKpi(Kpi kpi,Long id) {
         UserDto userDto = userService.getUserById(id);
