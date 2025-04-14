@@ -31,6 +31,11 @@ public class CycleService {
         this.userService = userService;
     }
 
+
+    public List<Cycle> getAllCycles() {
+        return cycleRepository.findAll();
+    }
+
     @Transactional
     public Cycle updateCycle(Long cycleId, Cycle updatedCycle) {
         Cycle existingCycle = cycleRepository.findById(cycleId)

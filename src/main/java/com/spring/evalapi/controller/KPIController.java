@@ -62,6 +62,6 @@ public class KPIController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteKPI(@PathVariable Long id) {
         kpiService.deleteKPI(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

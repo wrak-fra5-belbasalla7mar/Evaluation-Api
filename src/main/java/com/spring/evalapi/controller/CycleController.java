@@ -27,6 +27,12 @@ public class CycleController {
             Cycle savedCycle = cycleService.addCycle(newCycle );
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
+    @GetMapping
+    public ResponseEntity<List<Cycle>> getAllCycles() {
+        List<Cycle> cycles = cycleService.getAllCycles();
+        return ResponseEntity.status(HttpStatus.OK).body(cycles);
+    }
+
     @GetMapping("/Latest")
     public ResponseEntity<Cycle> getLatestCycle() {
         Cycle latestCycle = cycleService.ViewTheLatestCycle();
