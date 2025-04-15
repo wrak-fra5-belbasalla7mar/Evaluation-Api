@@ -5,19 +5,17 @@ import com.spring.evalapi.entity.KpiRole;
 import com.spring.evalapi.entity.Role;
 import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
 
     private final RoleRepository roleRepository;
     private final KpiRoleRepository kpiRoleRepository;
-    public RoleService(RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository) {
-        this.roleRepository = roleRepository;
-        this.kpiRoleRepository = kpiRoleRepository;
-    }
 
 
     public List<Role> getAllRoles() {

@@ -7,13 +7,21 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cycle {
 
     @Id
@@ -43,98 +51,12 @@ public class Cycle {
     private List<Objective> objectives = new ArrayList<>();
 
 
-    public void addKPI(Kpi kpi) {
-        kpis.add(kpi);
-        kpi.setCycle(this);
-    }
-    public void addObjective(Objective objective) {
-        objectives.add(objective);
-        objective.setCycle(this);
-    }
-
-    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis, Long companyManagerId) {
+    public Cycle(String name, LocalDate startDate, LocalDate endDate, CycleState cycleState, List<Kpi> kpis, Long companyManagerId) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.state = state;
+        this.state = cycleState;
         this.kpis = kpis;
-        this.companyManagerId = companyManagerId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public CycleState getState() {
-        return state;
-    }
-
-    public void setState(CycleState state) {
-        this.state = state;
-    }
-
-    public List<Kpi> getKpis() {
-        return kpis;
-    }
-
-    public void setKpis(List<Kpi> kpis) {
-        this.kpis = kpis;
-    }
-
-    public List<Objective> getObjectives() {
-        return objectives;
-    }
-
-    public void setObjectives(List<Objective> objectives) {
-        this.objectives = objectives;
-    }
-
-    public Cycle(Long id, String name, LocalDate startDate, LocalDate endDate, CycleState state, List<Kpi> kpis, List<Objective> objectives) {
-        this.id = id;
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.state = state;
-        this.kpis = kpis;
-        this.objectives = objectives;
-    }
-
-    public Cycle() {
-    }
-
-    public Long getCompanyManagerId() {
-        return companyManagerId;
-    }
-
-    public void setCompanyManagerId(Long companyManagerId) {
         this.companyManagerId = companyManagerId;
     }
 }

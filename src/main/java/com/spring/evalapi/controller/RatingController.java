@@ -3,6 +3,7 @@ package com.spring.evalapi.controller;
 import com.spring.evalapi.entity.Rating;
 import com.spring.evalapi.service.RatingService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ratings")
+@RequiredArgsConstructor
 public class RatingController {
 
     private final RatingService ratingService;
 
-    public RatingController(RatingService ratingService) {
-        this.ratingService = ratingService;
-    }
 
     @PostMapping
     public ResponseEntity<Rating> addRating(@Valid @RequestBody Rating rating) {

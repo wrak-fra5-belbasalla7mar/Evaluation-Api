@@ -2,19 +2,17 @@ package com.spring.evalapi.controller;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.service.CycleService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequestMapping("cycles")
+@RequiredArgsConstructor
 public class CycleController {
 
     private final CycleService cycleService;
-
-    public CycleController(CycleService cycleService) {
-        this.cycleService = cycleService;
-    }
 
     @PutMapping("/{cycleId}")
     public ResponseEntity<Cycle> updateCycle(@PathVariable Long cycleId, @RequestBody Cycle updatedCycle) {

@@ -12,6 +12,7 @@ import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KpiRepository;
 import com.spring.evalapi.repository.RatingRepository;
 import com.spring.evalapi.utils.CycleState;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RatingService {
 
     private final RatingRepository ratingRepository;
@@ -34,14 +36,6 @@ public class RatingService {
     private final TeamService teamService;
     private final KPIService kpiService;
 
-    public RatingService(RatingRepository ratingRepository, KpiRepository kpiRepository, CycleRepository cycleRepository, UserService userService, TeamService teamService, KPIService kpiService) {
-        this.ratingRepository = ratingRepository;
-        this.kpiRepository = kpiRepository;
-        this.cycleRepository = cycleRepository;
-        this.userService = userService;
-        this.teamService = teamService;
-        this.kpiService = kpiService;
-    }
 
     //    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
     @Transactional

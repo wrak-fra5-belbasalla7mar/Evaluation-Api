@@ -10,6 +10,7 @@ import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.ObjectiveRepository;
 import com.spring.evalapi.utils.CycleState;
 import com.spring.evalapi.utils.ObjectiveState;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,19 +19,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
     private final CycleRepository cycleRepository;
     private final TeamService teamService;
     private final  UserService userService;
-
-    public ObjectiveService(ObjectiveRepository objectiveRepository1, CycleRepository cycleRepository, TeamService teamService, UserService userService) {
-        this.objectiveRepository = objectiveRepository1;
-        this.cycleRepository = cycleRepository;
-        this.teamService = teamService;
-        this.userService = userService;
-    }
 
 
     @Transactional

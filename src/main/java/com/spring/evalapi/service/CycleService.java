@@ -6,6 +6,7 @@ import com.spring.evalapi.exception.CycleStateException;
 import com.spring.evalapi.exception.FieldIsRequiredException;
 import com.spring.evalapi.exception.NotFoundException;
 import com.spring.evalapi.utils.CycleState;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import com.spring.evalapi.entity.Cycle;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 @Service
+@RequiredArgsConstructor
 public class CycleService {
 
     private static final Logger logger = LoggerFactory.getLogger(CycleService.class);
@@ -24,12 +26,6 @@ public class CycleService {
     private final CycleRepository cycleRepository;
     private final RatingService ratingService;
     private final UserService userService;
-
-    public CycleService(CycleRepository cycleRepository, RatingService ratingService, UserService userService) {
-        this.cycleRepository = cycleRepository;
-        this.ratingService = ratingService;
-        this.userService = userService;
-    }
 
 
     public List<Cycle> getAllCycles() {

@@ -3,6 +3,7 @@ package com.spring.evalapi.controller;
 import com.spring.evalapi.entity.Objective;
 import com.spring.evalapi.service.ObjectiveService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("objectives")
+@RequiredArgsConstructor
 public class ObjectiveController {
 
     private final ObjectiveService objectiveService;
-    public ObjectiveController(ObjectiveService objectiveService) {
-        this.objectiveService = objectiveService;
-    }
+
     @PostMapping("")
     public ResponseEntity<?> assignObjectiveByUserId(@Valid @RequestBody Objective objective){
         return ResponseEntity.status(HttpStatus.CREATED).body(objectiveService.assignObjectiveByUserId(objective));

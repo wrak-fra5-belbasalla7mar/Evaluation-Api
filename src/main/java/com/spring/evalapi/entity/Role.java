@@ -4,12 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class Role {
 
     @Id
@@ -26,46 +34,6 @@ public class Role {
     @JsonIgnore
     private List<Kpi> kpis;
 
-    public Role() {
-    }
-
-    public Role(String name, String level, ArrayList<Kpi> kpis) {
-        this.name = name;
-        this.level = level;
-        this.kpis = kpis;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public List<Kpi> getKpis() {
-        return kpis;
-    }
-
-    public void setKpis(ArrayList<Kpi> kpis) {
-        this.kpis = kpis;
-    }
 
 
 }

@@ -3,6 +3,7 @@ package com.spring.evalapi.controller;
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.service.KPIService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/kpis")
+@RequiredArgsConstructor
 public class KPIController {
 
     private final KPIService kpiService;
-
-    public KPIController(KPIService kpiService) {
-        this.kpiService = kpiService;
-    }
 
     @PostMapping("/{userId}")
     public ResponseEntity<Kpi> addKPI(@Valid @RequestBody Kpi kpi,@PathVariable  Long userId) {

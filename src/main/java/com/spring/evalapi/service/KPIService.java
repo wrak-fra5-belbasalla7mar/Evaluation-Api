@@ -14,6 +14,9 @@ import com.spring.evalapi.repository.KpiRepository;
 import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
 import com.spring.evalapi.utils.CycleState;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class KPIService {
 
     private final KpiRepository kpiRepository;
@@ -29,13 +33,6 @@ public class KPIService {
     private final KpiRoleRepository kpiRoleRepository;
     private final UserService userService;
 
-    public KPIService(KpiRepository kpiRepository, CycleRepository cycleRepository, RoleRepository roleRepository, KpiRoleRepository kpiRoleRepository, UserService userService) {
-        this.kpiRepository = kpiRepository;
-        this.cycleRepository = cycleRepository;
-        this.roleRepository = roleRepository;
-        this.kpiRoleRepository = kpiRoleRepository;
-        this.userService = userService;
-    }
 
     public Kpi getKpiById(Long id) {
         return kpiRepository.findById(id).orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
