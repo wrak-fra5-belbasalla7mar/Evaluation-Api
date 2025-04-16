@@ -14,6 +14,7 @@ import com.spring.evalapi.repository.KpiRepository;
 import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
 import com.spring.evalapi.utils.CycleState;
+import com.spring.evalapi.utils.Level;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class KPIService {
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
-    public double getWeightByKpiIdAndRoleNameAndRoleLevel(Long kpiId, String roleName, String roleLevel) {
+    public double getWeightByKpiIdAndRoleNameAndRoleLevel(Long kpiId, String roleName, Level roleLevel) {
         KpiRole kpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
                 .orElse(null);
         return kpiRole != null ? kpiRole.getWeight() : 1.0;
@@ -57,23 +58,23 @@ public class KPIService {
     @Transactional
     public Kpi addKpi(Kpi kpi,Long id) {
         UserDto userDto = userService.getUserById(id);
-        if (!userDto.getRole().equals("CompanyManager")) {
+        if (!userDto.getRole().equals("COMPANY_MANAGER")) {
             throw new AccessDeniedException("Only company managers can add a kpi");
         }
         if (kpi.getName() == null || kpi.getName().isEmpty()) {
             throw new FieldIsRequiredException("KPI name is required");
         }
-        Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
-        if (passedCycle == null) {
-            throw new CycleStateException("No cycle in PASSED state found. KPIs can only be added during the PASSED state.");
+        Cycle openCycle = cycleRepository.findByState(CycleState.OPEN);
+        if (openCycle == null) {
+            throw new CycleStateException("No cycle in OPEN state found. KPIs can only be added during the OPEN state.");
         }
-        kpi.setCycle(passedCycle);
+        kpi.setCycle(openCycle);
         return kpiRepository.save(kpi);
     }
 
 
     @Transactional
-    public void assignKpiToRole(Long kpiId, String roleName, String roleLevel, Double weight) {
+    public void assignKpiToRole(Long kpiId, String roleName, Level roleLevel, Double weight) {
         if (weight == null) {
             throw new FieldIsRequiredException("Weight is required");
         }

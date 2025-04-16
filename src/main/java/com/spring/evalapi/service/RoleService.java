@@ -5,6 +5,7 @@ import com.spring.evalapi.entity.KpiRole;
 import com.spring.evalapi.entity.Role;
 import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
+import com.spring.evalapi.utils.Level;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,6 @@ public class RoleService {
     private final RoleRepository roleRepository;
     private final KpiRoleRepository kpiRoleRepository;
 
-
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
@@ -26,7 +26,7 @@ public class RoleService {
         if (role.getName() == null || role.getName().isEmpty()) {
             throw new FieldIsRequiredException("Role name is required");
         }
-        if (role.getLevel() == null || role.getLevel().isEmpty()) {
+        if (role.getLevel() == null) {
             throw new FieldIsRequiredException("Role level is required");
         }
         if (roleRepository.findByNameAndLevel(role.getName(), role.getLevel()).isPresent()) {
@@ -39,11 +39,12 @@ public class RoleService {
         roleRepository.deleteById(id);
     }
 
-    public Role getRoleByNameAndLevel(String name, String level) {
-        return roleRepository.findByNameAndLevel(name, level).orElseThrow();
+    public Role getRoleByNameAndLevel(String name, Level level) {
+        return roleRepository.findByNameAndLevel(name, level)
+                .orElseThrow(() -> new FieldIsRequiredException("Role with name " + name + " and level " + level + " not found"));
     }
 
-    public List<KpiRole> getKpisForRole(String roleName, String roleLevel) {
+    public List<KpiRole> getKpisForRole(String roleName, Level roleLevel) {
         return kpiRoleRepository.findByRole_NameAndRole_Level(roleName, roleLevel);
     }
 }

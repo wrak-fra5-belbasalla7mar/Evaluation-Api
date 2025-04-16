@@ -3,6 +3,7 @@ package com.spring.evalapi.controller;
 import com.spring.evalapi.entity.KpiRole;
 import com.spring.evalapi.entity.Role;
 import com.spring.evalapi.service.RoleService;
+import com.spring.evalapi.utils.Level;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,13 +32,13 @@ public class RoleController {
     }
 
     @GetMapping("/{name}/{level}")
-    public ResponseEntity<Role> getRoleByNameAndLevel(@PathVariable String name, @PathVariable String level) {
+    public ResponseEntity<Role> getRoleByNameAndLevel(@PathVariable String name, @PathVariable Level level) {
         Role role = roleService.getRoleByNameAndLevel(name, level);
         return ResponseEntity.ok(role);
     }
 
     @GetMapping("/{name}/{level}/kpis")
-    public ResponseEntity<List<KpiRole>> getKpisForRole(@PathVariable String name, @PathVariable String level) {
+    public ResponseEntity<List<KpiRole>> getKpisForRole(@PathVariable String name, @PathVariable Level level) {
         List<KpiRole> kpiRoles = roleService.getKpisForRole(name, level);
         return ResponseEntity.ok(kpiRoles);
     }

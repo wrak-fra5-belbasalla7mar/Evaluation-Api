@@ -2,6 +2,7 @@ package com.spring.evalapi.controller;
 
 import com.spring.evalapi.entity.Kpi;
 import com.spring.evalapi.service.KPIService;
+import com.spring.evalapi.utils.Level;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class KPIController {
 
     @PostMapping("/{kpiId}/role/{roleName}/{roleLevel}")
     public ResponseEntity<Void> assignKpiToRole(@PathVariable Long kpiId, @PathVariable String roleName,
-                                                @PathVariable String roleLevel, @RequestParam Double weight) {
+                                                @PathVariable Level roleLevel, @RequestParam Double weight) {
         kpiService.assignKpiToRole(kpiId, roleName, roleLevel, weight);
         return new ResponseEntity<>(HttpStatus.OK);
     }

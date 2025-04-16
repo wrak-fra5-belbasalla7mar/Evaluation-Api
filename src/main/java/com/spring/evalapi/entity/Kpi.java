@@ -10,12 +10,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Setter
-@Getter
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Setter
+@Getter
 public class Kpi {
 
     @Id
@@ -35,15 +36,7 @@ public class Kpi {
     @JsonIgnore
     private List<Rating> ratings;
 
-    @ManyToMany
-    @JoinTable(
-            name = "kpi_role",
-            joinColumns = @JoinColumn(name = "kpi_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @OneToMany(mappedBy = "kpi", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Role>roles;
-
-
-
+    private List<KpiRole> kpiRoles = new ArrayList<>();
 }

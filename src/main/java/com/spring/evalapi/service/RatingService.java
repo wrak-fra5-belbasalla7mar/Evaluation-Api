@@ -12,6 +12,7 @@ import com.spring.evalapi.repository.CycleRepository;
 import com.spring.evalapi.repository.KpiRepository;
 import com.spring.evalapi.repository.RatingRepository;
 import com.spring.evalapi.utils.CycleState;
+import com.spring.evalapi.utils.Level;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,8 +114,7 @@ public class RatingService {
             double weightedSum = 0.0,totalWeight = 0.0;
             UserDto user = userService.getUserById(ratedPersonId);
             String roleName = user.getRole();
-            String roleLevel = user.getLevel().name();
-
+            Level roleLevel = Level.valueOf(user.getLevel().name());
             for (Rating rating : personRatings) {
                 double score = rating.getScore();
                 Kpi kpi = rating.getKpi();

@@ -67,23 +67,15 @@ public class CycleService {
 
     @Transactional
     public Cycle addCycle(Cycle cycle) {
-        Cycle findOpenCycle=cycleRepository.findByState(CycleState.OPEN);
-        Cycle findPassCycle =cycleRepository.findByState(CycleState.PASSED);
-
-        if (findOpenCycle !=null ||findPassCycle!=null)
-            throw new IllegalStateException("Only One open cycle  be can add a cycle");
-
         UserDto userDto = userService.getUserById(cycle.getCompanyManagerId());
         logger.info("Attempting to add a cycle for user with ID: {}",userDto.toString());
 
-        if (!userDto.getRole().equals("CompanyManager")&& !userDto.getId().equals(userDto.getManagerId())) {
+        if (!userDto.getRole().equals("COMPANY_MANAGER")&& !userDto.getId().equals(userDto.getManagerId())) {
             throw new AccessDeniedException("Only company managers can add a cycle");
         }
         if (cycle.getCompanyManagerId()== null) {
             throw new FieldIsRequiredException("Cycle information can't be null");
         }
-        if(cycle.getState().equals(CycleState.OPEN))
-            throw new IllegalStateException("cycle state must be open");
 
         Cycle newCycle = new Cycle(
                 cycle.getName(),
