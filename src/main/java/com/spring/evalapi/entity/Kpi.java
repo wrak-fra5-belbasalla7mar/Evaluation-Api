@@ -12,7 +12,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Setter
@@ -37,6 +36,5 @@ public class Kpi {
     private List<Rating> ratings;
 
     @OneToMany(mappedBy = "kpi", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<KpiRole> kpiRoles = new ArrayList<>();
 }

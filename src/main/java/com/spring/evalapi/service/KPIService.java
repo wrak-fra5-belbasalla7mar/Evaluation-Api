@@ -15,8 +15,6 @@ import com.spring.evalapi.repository.KpiRoleRepository;
 import com.spring.evalapi.repository.RoleRepository;
 import com.spring.evalapi.utils.CycleState;
 import com.spring.evalapi.utils.Level;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,74 +32,62 @@ public class KPIService {
     private final KpiRoleRepository kpiRoleRepository;
     private final UserService userService;
 
-
-    @Transactional
     public Kpi getKpiById(Long id) {
-        return kpiRepository.findById(id).orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
+        return kpiRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
     }
 
-    @Transactional
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
+
     public double getWeightByKpiIdAndRoleNameAndRoleLevel(Long kpiId, String roleName, Level roleLevel) {
-        KpiRole kpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
-                .orElse(null);
-        return kpiRole != null ? kpiRole.getWeight() : 1.0;
+        return kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
+                .map(KpiRole::getWeight)
+                .orElse(1.0);
     }
 
-    @Transactional
-    public List<Kpi> getAllKpis( ) {
+    public List<Kpi> getAllKpis() {
         return kpiRepository.findAll();
     }
 
-    @Transactional
-    public Kpi addKpi(Kpi kpi,Long id) {
-        UserDto userDto = userService.getUserById(id);
-        if (!userDto.getRole().equals("COMPANY_MANAGER")) {
-            throw new AccessDeniedException("Only company managers can add a kpi");
+    public Kpi addKpi(Kpi kpi, Long userId) {
+        UserDto userDto = userService.getUserById(userId);
+        if (!"COMPANY_MANAGER".equals(userDto.getRole())) {
+            throw new AccessDeniedException("Only company managers can add a KPI");
         }
+
         if (kpi.getName() == null || kpi.getName().isEmpty()) {
             throw new FieldIsRequiredException("KPI name is required");
         }
+
         Cycle openCycle = cycleRepository.findByState(CycleState.OPEN);
         if (openCycle == null) {
             throw new CycleStateException("No cycle in OPEN state found. KPIs can only be added during the OPEN state.");
         }
+
         kpi.setCycle(openCycle);
         return kpiRepository.save(kpi);
     }
 
-
-    @Transactional
     public void assignKpiToRole(Long kpiId, String roleName, Level roleLevel, Double weight) {
         if (weight == null) {
             throw new FieldIsRequiredException("Weight is required");
         }
 
-        Kpi kpi = kpiRepository.findById(kpiId)
-                .orElseThrow(() -> new NotFoundException("KPI with ID " + kpiId + " not found"));
-
+        Kpi kpi = getKpiById(kpiId);
         Role role = roleRepository.findByNameAndLevel(roleName, roleLevel)
                 .orElseThrow(() -> new NotFoundException("Role with name " + roleName + " and level " + roleLevel + " not found"));
 
-        KpiRole existingKpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
-                .orElse(null);
+        KpiRole kpiRole = kpiRoleRepository.findByKpi_IdAndRole_NameAndRole_Level(kpiId, roleName, roleLevel)
+                .orElse(new KpiRole(kpi, role, weight));
 
-        KpiRole kpiRole;
-        if (existingKpiRole != null) {
-            kpiRole = existingKpiRole;
-            kpiRole.setWeight(weight);
-        } else {
-            kpiRole = new KpiRole(kpi, role, weight);
-        }
+        kpiRole.setWeight(weight);
         kpiRoleRepository.save(kpiRole);
     }
 
-    @Transactional
     public Kpi updateKPI(Kpi kpiDetails) {
-        Kpi existingKPI = kpiRepository.findById(kpiDetails.getId())
-                .orElseThrow(() -> new NotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
+        Kpi existingKPI = getKpiById(kpiDetails.getId());
 
         if (kpiDetails.getName() != null && !kpiDetails.getName().isEmpty()) {
             existingKPI.setName(kpiDetails.getName());
@@ -110,20 +96,17 @@ public class KPIService {
         return kpiRepository.save(existingKPI);
     }
 
-
-
-    @Transactional
     public Kpi assignKpiToCycle(Long kpiId, Long cycleId) {
-        Kpi kpi = kpiRepository.findById(kpiId).orElseThrow(() -> new NotFoundException("KPI with ID " + kpiId + " not found"));
-        Cycle cycle = cycleRepository.findById(cycleId).orElseThrow(() -> new NotFoundException("Cycle with ID " + cycleId + " not found"));
+        Kpi kpi = getKpiById(kpiId);
+        Cycle cycle = cycleRepository.findById(cycleId)
+                .orElseThrow(() -> new NotFoundException("Cycle with ID " + cycleId + " not found"));
+
         kpi.setCycle(cycle);
         return kpiRepository.save(kpi);
     }
 
-    @Transactional
     public void deleteKPI(Long id) {
-        Kpi kpi = kpiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
+        Kpi kpi = getKpiById(id);
         kpiRepository.delete(kpi);
     }
 }

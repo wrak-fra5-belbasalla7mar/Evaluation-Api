@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "kpi_role")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class KpiRole {
 
     @Id
@@ -27,8 +27,7 @@ public class KpiRole {
     private Role role;
 
     @Column(nullable = false)
-    private double weight=1.0;
-
+    private double weight = 1.0;
 
     public KpiRole(Kpi kpi, Role role, Double weight) {
         this.kpi = kpi;

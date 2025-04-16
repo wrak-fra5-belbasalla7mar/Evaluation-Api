@@ -31,9 +31,9 @@ public class Role {
     private Level level;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<KpiRole> kpiRoles;
+    private List<KpiRole> kpiRoles = new ArrayList<>();
 }
+
 
 
 
