@@ -34,10 +34,12 @@ public class KPIService {
     private final UserService userService;
 
 
+    @Transactional
     public Kpi getKpiById(Long id) {
         return kpiRepository.findById(id).orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));
     }
 
+    @Transactional
     public List<Kpi> getKPIsByCycleId(Long cycleId) {
         return kpiRepository.findByCycle_Id(cycleId);
     }
@@ -47,6 +49,7 @@ public class KPIService {
         return kpiRole != null ? kpiRole.getWeight() : 1.0;
     }
 
+    @Transactional
     public List<Kpi> getAllKpis( ) {
         return kpiRepository.findAll();
     }
@@ -94,6 +97,7 @@ public class KPIService {
         kpiRoleRepository.save(kpiRole);
     }
 
+    @Transactional
     public Kpi updateKPI(Kpi kpiDetails) {
         Kpi existingKPI = kpiRepository.findById(kpiDetails.getId())
                 .orElseThrow(() -> new NotFoundException("KPI with ID " + kpiDetails.getId() + " not found"));
@@ -115,7 +119,7 @@ public class KPIService {
         return kpiRepository.save(kpi);
     }
 
-
+    @Transactional
     public void deleteKPI(Long id) {
         Kpi kpi = kpiRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("KPI with ID " + id + " not found"));

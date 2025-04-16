@@ -37,7 +37,7 @@ public class RatingService {
     private final KPIService kpiService;
 
 
-    //    private static final Logger log = LoggerFactory.getLogger(RatingService.class);
+
     @Transactional
     public Rating addRating(Rating rating) throws IllegalStateException {
         Cycle passedCycle = cycleRepository.findByState(CycleState.PASSED);
@@ -46,11 +46,12 @@ public class RatingService {
         }
 
         UserDto submitterPerson = userService.getUserById(rating.getSubmitterId());
+
+        System.out.println(submitterPerson);
         UserDto ratedPerson = userService.getUserById(rating.getRatedPersonId());
         TeamDto submitterTeam = teamService.getTeamByMemberId(submitterPerson.getId());
         TeamDto ratedPersonTeam = teamService.getTeamByMemberId(ratedPerson.getId());
-//        System.out.println("Submitter Team ID: " + submitterTeam.getId());
-//        System.out.println("Rated Person Team ID: " + ratedPersonTeam.getId());
+
         if (!submitterTeam.getId().equals(ratedPersonTeam.getId())) {
             throw new NotFoundException("Submitter (ID: " + rating.getSubmitterId() + ") and Rated Person (ID: " + rating.getRatedPersonId() + ") are not in the same team.");
         }
@@ -68,6 +69,7 @@ public class RatingService {
         rating.setCycle(passedCycle);
         return ratingRepository.save(rating);
     }
+
 
     public Rating getRatingById(Long id) {
         return ratingRepository.findById(id)
@@ -96,7 +98,7 @@ public class RatingService {
         return ratingRepository.findByCycle_IdAndRatedPersonId(cycleId, ratedPersonId);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Map<Long, Double> calculateAverageScores(Long cycleId) {
         List<Rating> cycleRatings = ratingRepository.findByCycle_Id(cycleId);
         Map<Long, List<Rating>> ratingsByPerson = cycleRatings.stream()
@@ -117,7 +119,7 @@ public class RatingService {
                 double score = rating.getScore();
                 Kpi kpi = rating.getKpi();
 
-                Double weight = kpiService.getWeightByKpiIdAndRoleNameAndRoleLevel(kpi.getId(), roleName, roleLevel);
+                double weight = kpiService.getWeightByKpiIdAndRoleNameAndRoleLevel(kpi.getId(), roleName, roleLevel);
 
                 weightedSum += score * weight;
                 totalWeight += weight;

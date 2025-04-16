@@ -3,11 +3,14 @@ package com.spring.evalapi.repository;
 import com.spring.evalapi.entity.Cycle;
 import com.spring.evalapi.service.CycleService;
 import com.spring.evalapi.utils.CycleState;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -22,5 +25,6 @@ public interface CycleRepository extends JpaRepository<Cycle,Long> {
     List<Cycle> findAllByOrderByStartDateAsc();
     List<Cycle> findAllByOrderByStartDateDesc();
     Cycle findByEndDateBefore(Date endDate);
+    Cycle findByStartDate(Date startDate);
 }
 

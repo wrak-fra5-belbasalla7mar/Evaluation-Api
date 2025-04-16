@@ -32,11 +32,13 @@ public class ObjectiveService {
     public Objective assignObjectiveByUserId(Objective objective ) {
 
         UserDto user=userService.getUserById(objective.getAssignedUserId());
+
         if(user==null)throw new RuntimeException("user not found ID "+objective.getAssignedUserId());
 
         TeamDto team=teamService.getTeamId(objective.getTeamId());
 
         if(team ==null )throw new RuntimeException("Team for User ID not found "+objective.getAssignedUserId());
+        
         if(!Objects.equals(team.getManagerId(), objective.getManagerId()))throw new RuntimeException("can,t add objective by this user "+objective.getManagerId());
 
         Optional<Cycle> cycle = cycleRepository.findById(objective.getCycleId());

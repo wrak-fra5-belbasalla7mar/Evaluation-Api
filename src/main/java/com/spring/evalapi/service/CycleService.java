@@ -28,6 +28,7 @@ public class CycleService {
     private final UserService userService;
 
 
+    @Transactional
     public List<Cycle> getAllCycles() {
         return cycleRepository.findAll();
     }
@@ -88,7 +89,7 @@ public class CycleService {
                 cycle.getName(),
                 cycle.getStartDate(),
                 cycle.getEndDate(),
-                CycleState.OPEN,
+                CycleState.CREATED,
                 cycle.getKpis(),
                 cycle.getCompanyManagerId()
         );
@@ -99,33 +100,37 @@ public class CycleService {
     }
 
 
+    @Transactional
     public Cycle ViewTheLatestCycle() {
         return cycleRepository.findLatestCycle();
     }
 
+    @Transactional
     public List<Cycle> findAllByOrderByStartDateDesc(){
         return cycleRepository.findAllByOrderByStartDateDesc();
     }
 
+    @Transactional
     public List<Cycle> findAllByOrderByStartDateAsc(){
         return cycleRepository.findAllByOrderByStartDateAsc();
     }
 
 
     @Transactional
-    public Cycle passCycle(Long id) {
+    public String passCycle(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
         if (cycle.isEmpty()) throw new NotFoundException("No cycle found to mark as passed");
         if (cycle.get().getState() == CycleState.OPEN)
         {
             cycle.get().setState(CycleState.PASSED);
-            return cycleRepository.save(cycle.get());
+            cycleRepository.save(cycle.get());
+            return "Cycle passed ";
         }
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.get().getState()));
     }
 
     @Transactional
-    public Cycle closeCycle(Long id) {
+    public String closeCycle(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
         if (cycle.isEmpty()) {
             throw new NotFoundException("No cycle found to close");
@@ -134,11 +139,29 @@ public class CycleService {
         {
             cycle.get().setState(CycleState.CLOSED);
             ratingService.calculateAverageScores(cycle.get().getId());
-            return cycleRepository.save(cycle.get());
+            cycleRepository.save(cycle.get());
+            return "Cycle closed ";
         }
         else throw new CycleStateException(String.format("Cycle is  : %s",cycle.get().getState()));
     }
 
+
+    @Transactional
+    public String openCycle(Long id) {
+        Optional<Cycle> cycle = cycleRepository.findById(id);
+        if (cycle.isEmpty()) {
+            throw new NotFoundException("No cycle found to Open");
+        }
+        if (cycle.get().getState() == CycleState.CREATED)
+        {
+            cycle.get().setState(CycleState.OPEN);
+            cycleRepository.save(cycle.get());
+            return "cycle Opened";
+        }
+        else throw new CycleStateException(String.format("Cycle is  : %s",cycle.get().getState()));
+    }
+
+    @Transactional
     public Cycle cycleByID(Long id) {
         Optional<Cycle> cycle = cycleRepository.findById(id);
         if (cycle.isEmpty()) {
@@ -158,12 +181,21 @@ public class CycleService {
        return "Cycle deleted";
     }
 
+
+
     @Scheduled(cron = "0 0 0 * * ?")
-    public void closeExpiredCycles() {
+    public void OpenCyclesScheduled() {
         Cycle expiredCycles = cycleRepository.findByEndDateBefore(new Date());
+        expiredCycles.setState(CycleState.OPEN);
+        cycleRepository.save(expiredCycles);
+    }
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void closeCyclesScheduled() {
+        Cycle expiredCycles = cycleRepository.findByStartDate(new Date());
         expiredCycles.setState(CycleState.CLOSED);
         cycleRepository.save(expiredCycles);
     }
+
 
 
 }

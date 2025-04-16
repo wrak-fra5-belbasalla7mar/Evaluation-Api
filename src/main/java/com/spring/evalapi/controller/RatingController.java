@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ratings")
@@ -52,5 +53,9 @@ public class RatingController {
     @GetMapping("/cycle/{cycleId}/ratedPerson/{ratedPersonId}")
     public ResponseEntity<List<Rating>> getRatingsByCycleIdAndRatedPersonId(@PathVariable Long cycleId, @PathVariable Long ratedPersonId) {
         return ResponseEntity.ok(ratingService.getRatingsByCycleIdAndRatedPersonId(cycleId, ratedPersonId));
+    }
+    @GetMapping("/cycle/rate/{cycleId}")
+    public ResponseEntity<Map<Long, Double>> getAvgRatingsByCycle(@PathVariable Long cycleId) {
+        return ResponseEntity.ok(ratingService.calculateAverageScores(cycleId));
     }
 }

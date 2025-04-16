@@ -2,17 +2,13 @@ package com.spring.evalapi.service;
 
 import com.spring.evalapi.exception.NotFoundException;
 import com.spring.evalapi.dto.TeamDto;
-import com.spring.evalapi.dto.TeamMemberDto;
-import org.apache.catalina.LifecycleState;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -21,18 +17,17 @@ public class TeamService {
 
 
     public TeamDto getTeamByMemberId(Long memberId) {
-        TeamDto team = webClient.get()
+        return webClient.get()
                 .uri("/team-members?memberId=" + memberId)
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals, response ->
                         Mono.error(new NotFoundException("No teams found for memberId: " + memberId)))
                 .bodyToMono(TeamDto.class)
                 .block();
-        return team;
     }
 
     public TeamDto getTeamId(Long id) {
-        TeamDto team= webClient.get()
+        return webClient.get()
                 .uri("/"+id)
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals, response ->
@@ -40,7 +35,6 @@ public class TeamService {
                 )
                 .bodyToMono(TeamDto.class)
                 .block();
-        return team;
     }
 
 

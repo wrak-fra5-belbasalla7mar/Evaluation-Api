@@ -25,6 +25,7 @@ public class CycleController {
             Cycle savedCycle = cycleService.addCycle(newCycle );
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCycle);
     }
+
     @GetMapping
     public ResponseEntity<List<Cycle>> getAllCycles() {
         List<Cycle> cycles = cycleService.getAllCycles();
@@ -51,14 +52,21 @@ public class CycleController {
 
 
     @PutMapping("/pass/{id}")
-    public ResponseEntity<Cycle> passCycle(@Valid @PathVariable Long id) {
-        Cycle cycle = cycleService.passCycle(id);
+    public ResponseEntity<String> passCycle(@Valid @PathVariable Long id) {
+        String cycle = cycleService.passCycle(id);
         return ResponseEntity.ok(cycle);
     }
 
     @PutMapping("/close/{id}")
-    public ResponseEntity<Cycle> closeCycle(@Valid @PathVariable Long id) {
-        Cycle cycle = cycleService.closeCycle(id);
+    public ResponseEntity<String> closeCycle(@Valid @PathVariable Long id) {
+        String cycle=cycleService.closeCycle(id);
+        return ResponseEntity.ok(cycle);
+    }
+
+
+    @PutMapping("/open/{id}")
+    public ResponseEntity<String> openCycle(@Valid @PathVariable Long id) {
+        String cycle=cycleService.openCycle(id);
         return ResponseEntity.ok(cycle);
     }
 
